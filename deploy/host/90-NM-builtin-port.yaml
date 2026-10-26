@@ -1,0 +1,33 @@
+# Example netplan file (NetworkManager renderer) giving the box's built-in Ethernet port one
+# extra, fixed address on the travel router's subnet, beside whatever DHCP hands out. At home
+# the port keeps its usual DHCP lease and the extra address does nothing; plugged into the
+# travel router, the phone aim page is always at http://<that address>:8090/.
+#
+# This is a reference copy of what NetworkManager wrote on the author's box, with its
+# installation values replaced by placeholders. Don't copy it over your own file: add the
+# address with nmcli instead (see README.md in this directory), which writes the real file.
+#   <interface>      the port's name (`ip -br link`; enP7s7 on the author's GB10 box)
+#   <uuid>           the connection's UUID (`nmcli -f NAME,UUID con show`)
+#   198.51.100.10/24 a documentation address: use a free address on YOUR router's subnet,
+#                    outside its DHCP pool, and put the same subnet in config/local.yaml's
+#                    aim.trusted_networks
+network:
+  version: 2
+  ethernets:
+    NM-<uuid>:
+      renderer: NetworkManager
+      match:
+        name: "<interface>"
+      dhcp4: true
+      dhcp6: true
+      wakeonlan: true
+      networkmanager:
+        uuid: "<uuid>"
+        name: "Wired connection 3"
+        passthrough:
+          connection.autoconnect-priority: "-999"
+          ethernet._: ""
+          ipv4.address1: "198.51.100.10/24"
+          ipv6.addr-gen-mode: "default"
+          ipv6.ip6-privacy: "-1"
+          proxy._: ""

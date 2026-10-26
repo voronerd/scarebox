@@ -1,0 +1,128 @@
+# config/blocklist.txt -- deterministic censor layer (03-01).
+#
+# One term or short phrase per line. Matched with word boundaries against
+# normalise(text) (see scarebox/censor.py): lowercased, leetspeak-folded,
+# separators stripped, 3+ repeated letters collapsed to 1. Blank lines and
+# lines starting with # are ignored. Costume-specific exceptions (e.g. "baby
+# shark", "dead pirate") are NOT here -- they live in censor.py's ALLOWLIST
+# and are checked before this file, gated by the runner's costume category.
+#
+# "gender" and "disability" classes deliberately do NOT list everyday nouns
+# (boy/girl/man/woman/wheelchair) -- those appear constantly in benign lines
+# ("young lady", "little monster") and blocking them would strangle every
+# legitimate joke. Only mockery-coded terms are listed for those two classes.
+# The guard model (Task 2) is the backstop for anything that slips past this
+# narrower deterministic net.
+
+# -- profanity (incl. mild) --
+hell
+damn
+crap
+sucks
+suck
+butt
+ass
+shit
+fuck
+fucking
+bitch
+bastard
+piss
+goddamn
+
+# -- slurs (short standard list; guard covers the tail, not encyclopaedic) --
+retard
+retarded
+fag
+faggot
+nigger
+nigga
+spic
+chink
+kike
+tranny
+whore
+slut
+
+# -- body / size / appearance --
+fat
+chubby
+skinny
+short
+tall
+ugly
+face
+teeth
+hair
+nose
+legs
+belly
+weight
+
+# -- age (allow "baby shark" via the costume allowlist in censor.py) --
+old
+baby
+granny
+geezer
+
+# -- gender (mockery-coded only, see note above) --
+sissy
+pansy
+tomboy
+
+# -- disability (mockery-coded + clinical shorthand used as an insult) --
+disabled
+cripple
+crippled
+dumb
+spastic
+
+# -- speed / fitness --
+slow
+slowpoke
+lazy
+unfit
+waddle
+# heavy/clumsy movement words are "slow" by another name: a live line called a runner a
+# "lumbering lumberjack" (2026-10-19 detection report)
+lumbering
+plodding
+trudging
+waddling
+# fatigue: goading the pace is in (Martin, 2026-10-16); remarking that a runner is worn out is not
+tired
+exhausted
+sluggish
+wheezing
+puffing
+gasping
+
+# -- violence / threat (allow cartoon "spooky"; "dead" via the costume allowlist for
+# pirate/zombie/skeleton/ghost -- those categories are LITERALLY about being dead, and the
+# plan's own worked OK example ("A skeleton! Positively dead on time.") plus the existing
+# approved zombie line ("The walking dead have arrived...") both depend on it) --
+kill
+stab
+blood
+murder
+dead
+
+# -- romance --
+kiss
+date
+sexy
+hot
+
+# -- adult themes --
+sober
+drunk
+beer
+wine
+booze
+hangover
+pub
+cocktail
+smoke
+vape
+drugs
+gamble

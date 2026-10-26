@@ -1,0 +1,69 @@
+# TTS bake-off bench image (01-04). Build once on gbox1, run a batch (not a server) against it.
+#
+# Build (from repo root, on gbox1):
+#   source deploy/images.env   # IMAGE_TORCH
+#   docker build --build-arg IMAGE_TORCH="$IMAGE_TORCH" \
+#     -t scarebox/tts-bench:latest -f deploy/bench/Dockerfile.tts .
+#
+# Run (repo is mounted live at /workspace -- code changes don't need a rebuild, only pip
+# installs do). Weights come from ~scarebox/models (staged in Phase 0), read-only:
+#   docker run --rm --gpus all --ipc=host \
+#     -v "$HOME/models:/models:ro" -v "$HOME/scarebox:/workspace" -w /workspace \
+#     -e HF_HUB_OFFLINE=1 scarebox/tts-bench:latest python3 scripts/bench_tts.py
+#
+# Base: ${IMAGE_TORCH} (NVIDIA PyTorch 2.14 NGC, aarch64). Keep that image's own torch build --
+# never reinstall torch, or torchaudio, from PyPI here: aarch64 PyPI wheels are CPU-only (or,
+# for torchaudio, ABI-mismatched against this image's custom NVIDIA build) and would either
+# silently downgrade to CPU-only or hard-crash on import. Every package below that pins torch
+# is installed with --no-deps, then its real remaining deps are listed explicitly by hand
+# (verified against each package's actual PyPI `requires_dist`, not guessed).
+ARG IMAGE_TORCH
+FROM ${IMAGE_TORCH}
+
+ENV HF_HUB_OFFLINE=1 \
+    PIP_NO_INPUT=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /opt/bench
+
+# espeak-ng: system binary misaki[en] (Kokoro's English G2P) needs for phonemization.
+RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends espeak-ng \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Piper -----------------------------------------------------------------------------------
+# FINDING (2026-10-15): `pip install piper-tts` (unpinned) now pulls OHF-Voice/piper1-gpl,
+# GPL-3.0-or-later as of piper-tts 1.3.0 (2025-07-10) -- a relicense from the original
+# rhasspy/piper engine, which was MIT and is now archived. ADR 0001 Sec1d bans GPL deps
+# outright, so this project pins the LAST genuinely-MIT release instead of floating to the
+# current (GPL) one. See docs/MODELS.md for the full writeup --
+# this is a deliberate licence pin, not a silent workaround.
+RUN pip install --no-cache-dir "piper-tts==1.2.0" soundfile \
+    || touch /opt/piper-install-failed
+
+# --- Kokoro + misaki[en] ----------------------------------------------------------------------
+# kokoro's own torch/numpy requires are unversioned (already satisfied by the base image, so
+# --no-deps is belt-and-suspenders here, not strictly required) -- its real deps are
+# huggingface-hub, loguru, misaki[en], transformers.
+RUN pip install --no-cache-dir --no-deps kokoro \
+    && pip install --no-cache-dir huggingface-hub loguru "misaki[en]" transformers \
+    || touch /opt/kokoro-install-failed
+# misaki's English G2P loads spaCy en_core_web_sm and pip-installs it at first use if missing.
+# That fails offline, and even online the running interpreter can't see a model installed
+# mid-process (02-03 render failure). Bake it in at build time.
+RUN pip install --no-cache-dir \
+        https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl \
+    && python -c "import spacy; spacy.load('en_core_web_sm')"
+
+# --- Chatterbox Turbo -------------------------------------------------------------------------
+# chatterbox-tts==0.1.7 hard-pins torch==2.6.0 / torchaudio==2.6.0 -- --no-deps is mandatory.
+# Remaining deps installed explicitly, skipping gradio (its own demo UI, not needed for
+# programmatic generate()) and spacy-pkuseg/pykakasi (Chinese/Japanese text normalisation,
+# irrelevant for English-only generation here).
+# The base image has NO torchaudio at all (checked directly, 2026-10-15). If chatterbox hard-
+# imports it, this install is expected to come up blocked at RUNTIME (not here at build time,
+# since we don't execute it) -- see docs/MODELS.md, not a bug to chase further.
+RUN pip install --no-cache-dir --no-deps chatterbox-tts \
+    && pip install --no-cache-dir \
+        "librosa==0.11.0" s3tokenizer "transformers==5.2.0" "diffusers==0.29.0" \
+        "resemble-perth>=1.0.0" "conformer==0.3.2" "safetensors==0.5.3" pyloudnorm omegaconf \
+    || touch /opt/chatterbox-install-failed

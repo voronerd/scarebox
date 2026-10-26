@@ -1,0 +1,101 @@
+# Replay bench config: FileSource over testdata/replay.mp4 instead of the live camera.
+# Used by scripts/replay_perceive.py (02-01 Task 3). The camera section is unused by a file
+# source but still has to satisfy config.py's schema, so it points at harmless placeholders --
+# `CAMERA_HOST`/`CAMERA_USER`/`CAMERA_PASSWORD`/`AIM_TOKEN` still need to resolve from .env.
+
+camera:
+  host: ${CAMERA_HOST}
+  mac: ""
+  user: ${CAMERA_USER}
+  password: ${CAMERA_PASSWORD}
+  rtsp_path: /cam/realmonitor?channel=1&subtype=1
+  set_clock_on_start: false
+
+source:
+  kind: file
+  file: testdata/replay.mp4
+  loop: false
+  usb_name: WB7022               # unused when kind: file
+  usb_dev_dir: /host-dev
+  width: 1920
+  height: 1080
+  fps: 30
+
+perceive:
+  detector: yolox_s
+  min_confidence: 0.5
+  # Vertical line at x=0.55 (normalised): picked by eye against annotated replay frames
+  # (02-01 Task 3) to sit across the runners' path just before the finish-line banner.
+  trigger_line: [[0.55, 0.0], [0.55, 1.0]]
+  min_bbox_height: 0.25
+  group_band: 0.08
+  group_window_s: 1.5
+  best_crop_frames: 1            # 03-03 lever 1: single crop at trigger; picked in the hub's lever ladder
+
+judge:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8
+  crop_max_px: 512
+  timeout_s: 2.0
+  # See config/scarebox.example.yaml for why this is 0.0: confidence is uncorrelated with
+  # correctness on this model/prompt (scripts/calibrate_judge.py). Invalid/timeout verdicts still
+  # fall back to mystery via judge.judge()'s own error path.
+  min_confidence: 0.0
+  schema: lean              # 03-03 lever 2: c/k/d only. "full" keeps the 03-02 six-key schema.
+
+quip:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8
+  max_words: 15
+  roast_non_costumes: true
+  timeout_s: 1.5           # 03-02: quip p95 target <= 700ms; generous headroom over network/decode
+  single_call: false       # 03-02: judge+quip single-call fallback (01-03 flagged); off by default
+  single_call_timeout_s: 2.5   # 03-03: judge_and_quip's own budget; 1.5s (shared) measured 0/20
+
+censor:
+  blocklist: config/blocklist.txt
+  guard_endpoint: http://127.0.0.1:8101/v1
+  guard_model: granite-guardian
+  fail_closed: true
+  guard_timeout_s: 0.6           # 03-01: guard p95 253 ms with the VLM busy; 0.25 would reject nearly all live lines
+
+voice:
+  engine: chatterbox              # Martin 2026-10-16: Chatterbox George (scarebox-tts container); kokoro still works
+  voice: bm_george
+  reference_clip: library/voice/reference.wav
+  exaggeration: 0.7
+  fx_chain: megaphone          # Martin 2026-10-16: variant E (loud-hailer)
+  speed: 1.25
+  kokoro_dir: models/Kokoro-82M   # local weights only; relative to the app working dir (/app)
+  stream_segments: true    # one TTS request per sentence: 9.5% live share vs 3% whole-line (cb A/B 2026-10-16)
+  tts_url: http://127.0.0.1:8102
+  tts_timeout_s: 3.0
+
+stage:
+  alsa_device: scarebox_out
+  sink: wav                      # bench: no device expected, none probed (04-01)
+  cooldown_s: 1.0
+  queue_max: 2
+  stings: false
+
+orchestrator:
+  budget_s: 3.5
+  max_line_age_s: 8.0
+  max_live_inflight: 1           # live pipelines at once; others get judge-only + a library line (03-03)
+
+library:
+  manifest: library/manifest.json
+  packs: library/costume_packs.json   # costume-specific lines, matched from the judge's costume string
+  require_approved: false
+
+aim:
+  listen: 0.0.0.0:8090
+
+watchdog:
+  frame_timeout_s: 30.0
+  tick_timeout_s: 20.0
+  debug_hooks: false        # 04-03: true only in config/soak.yaml (the soak's hang injection)
+
+capture:
+  enabled: false
+  dir: runs/capture

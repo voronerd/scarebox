@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>scarebox control room</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; overflow-x: hidden; max-width: 100vw; }
+  body {
+    background: #111; color: #eee; font-family: -apple-system, system-ui, sans-serif;
+    padding: 8px; padding-bottom: 32px;
+  }
+  h1 { font-size: 15px; margin: 2px 0 8px; color: #f80; }
+  h2 { font-size: 13px; margin: 10px 0 6px; color: #ccc; text-transform: uppercase; letter-spacing: .04em; }
+  .view-wrap { position: relative; width: 100%; line-height: 0; background: #000; }
+  #stream { width: 100%; display: block; border: 1px solid #444; min-height: 120px; }
+  #tapCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; }
+  .hint { font-size: 11px; color: #999; margin: 4px 0 10px; }
+  button, .btn {
+    font-size: 15px; min-height: 44px; padding: 10px 12px; background: #222; color: #eee;
+    border: 1px solid #555; border-radius: 8px; touch-action: manipulation;
+  }
+  button:active, .btn:active { background: #f80; color: #111; }
+  button.primary { background: #a40; border-color: #f80; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 6px 0; }
+  .row.wrap-btns > * { flex: 1 1 auto; min-width: 70px; }
+  #testBtn { width: 100%; font-size: 17px; font-weight: 600; }
+  .ptz-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; max-width: 220px; margin: 8px auto; }
+  .ptz-grid button { padding: 12px 0; }
+  #status { font-size: 11px; color: #9c9; white-space: pre-wrap; background: #1a1a1a;
+    border: 1px solid #333; border-radius: 6px; padding: 6px; margin: 6px 0; word-break: break-all; }
+  #status.bad { color: #e66; }
+  .msg { font-size: 12px; color: #ccc; min-height: 16px; margin: 2px 0; }
+  details { background: #181818; border: 1px solid #333; border-radius: 8px; margin: 10px 0; padding: 4px 10px; }
+  summary { font-size: 16px; padding: 12px 0; min-height: 44px; box-sizing: border-box; cursor: pointer; }
+  .setting { margin: 10px 0; }
+  .setting label { display: block; font-size: 12px; color: #ccc; margin-bottom: 2px; }
+  .setting .val { color: #f80; font-weight: 600; }
+  .setting input[type=range] { width: 100%; height: 30px; }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+  .toggle-row input[type=checkbox] { width: 44px; height: 44px; margin: 0; flex: 0 0 44px; }
+  .toggle-row label { flex: 1; padding-right: 12px; }
+  #cards { display: flex; flex-direction: column; gap: 8px; }
+  .card { background: #181818; border: 1px solid #333; border-radius: 8px; padding: 8px; font-size: 12px; }
+  .card.blocked { border-color: #a33; }
+  .card-top { display: flex; gap: 8px; }
+  .card-thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; background: #000; flex: none; }
+  .card-body { flex: 1; min-width: 0; }
+  .card-headline { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 10px;
+    background: #333; color: #ccc; margin-right: 4px; }
+  .badge.live { background: #163; color: #8f8; }
+  .badge.pack { background: #335; color: #aaf; }
+  .badge.dropped { background: #522; color: #f99; }
+  .badge.blocked { background: #522; color: #f99; }
+  .ms-row { color: #999; font-size: 12px; margin-top: 4px; }
+  .card-line { margin: 4px 0; }
+  .report-link { display: block; min-height: 44px; line-height: 44px; margin: 0 0 8px; color: #fb3; }
+  .hint { color: #999; font-size: 12px; margin: 2px 0 6px; }
+  .badge { font-size: 12px; }
+  .ts { color: #666; font-size: 10px; }
+  #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.9); display: none;
+    align-items: center; justify-content: center; z-index: 50; }
+  #lightbox.open { display: flex; }
+  #lightbox img { max-width: 94vw; max-height: 94vh; }
+  .crop-controls { display: none; }
+  .crop-controls.active { display: block; }
+</style>
+</head>
+<body>
+<h1>scarebox control room</h1>
+
+<div class="view-wrap">
+  <img id="stream" alt="live view">
+  <canvas id="tapCanvas"></canvas>
+</div>
+<div class="hint" id="viewHint">Drag two points on the image to set the trigger line.</div>
+
+<div class="row wrap-btns">
+  <button id="cropModeBtn">Crop</button>
+</div>
+<div class="crop-controls" id="cropControls">
+  <div class="hint">Drag a rectangle over the FULL frame -- this is what gets cut before detection (no zoom motor on this camera).</div>
+  <div class="row wrap-btns">
+    <button id="cropApplyBtn" class="primary">Apply crop</button>
+    <button id="cropResetBtn">Full frame</button>
+    <button id="cropDoneBtn">Done</button>
+  </div>
+</div>
+
+<button id="testBtn">TEST LINE</button>
+<div id="status">status: loading...</div>
+<div class="msg" id="msg"></div>
+
+<div class="ptz-grid" id="ptzGrid" style="display:none;">
+  <button data-dir="" disabled></button>
+  <button data-dir="Up">&uarr;</button>
+  <button data-dir="" disabled></button>
+  <button data-dir="Left">&larr;</button>
+  <button data-dir="" disabled></button>
+  <button data-dir="Right">&rarr;</button>
+  <button data-dir="" disabled></button>
+  <button data-dir="Down">&darr;</button>
+  <button data-dir="" disabled></button>
+</div>
+
+<details id="settingsPanel">
+  <summary>Settings</summary>
+  <div id="settingsBody">loading settings...</div>
+  <div class="row wrap-btns">
+    <button id="resetBtn">Reset all to defaults</button>
+  </div>
+</details>
+
+<h2>Recent events</h2>
+<a id="reportPdfLink" class="report-link">Download detection report (PDF, last 30)</a>
+<a id="reportLink" class="report-link" target="_blank" rel="noopener">View report as a web page</a>
+<div id="cards"></div>
+
+<div id="lightbox"><img id="lightboxImg" alt="crop"></div>
+
+<script>
+(function () {
+  "use strict";
+  var qs = new URLSearchParams(location.search);
+  var token = qs.get("token") || "";
+
+  function withToken(url) {
+    var sep = url.indexOf("?") === -1 ? "?" : "&";
+    return url + sep + "token=" + encodeURIComponent(token);
+  }
+  document.getElementById("reportLink").href = withToken("/report.html");
+  document.getElementById("reportPdfLink").href = withToken("/report.pdf?n=30");
+
+  function apiFetch(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({}, opts.headers, { "X-Token": token });
+    return fetch(withToken(path), opts).then(function (resp) {
+      if (!resp.ok) {
+        return resp.json().catch(function () { return {}; }).then(function (body) {
+          throw new Error(body.error || ("HTTP " + resp.status));
+        });
+      }
+      return resp.json();
+    });
+  }
+
+  function setMsg(text) { document.getElementById("msg").textContent = text; }
+
+  // -- live view: MJPEG stream (browsers consume multipart/x-mixed-replace natively in <img>) --
+  var stream = document.getElementById("stream");
+  var inCropMode = false;
+
+  function streamUrl() {
+    return inCropMode ? "/stream.mjpg?view=full" : "/stream.mjpg";
+  }
+  function startStream() {
+    stream.src = withToken(streamUrl());
+  }
+  startStream();
+  // A dropped/stalled MJPEG connection (phone screen lock, wifi blip) just stops updating --
+  // reconnect periodically so the view doesn't go stale silently.
+  setInterval(function () {
+    if (!inCropMode) { startStream(); }
+  }, 20000);
+
+  // -- trigger-line drag (pointer events: mouse + touch + pen, one code path) ----------------
+  var canvas = document.getElementById("tapCanvas");
+  var taps = [];
+  function resizeCanvas() {
+    canvas.width = stream.clientWidth;
+    canvas.height = stream.clientHeight;
+  }
+  window.addEventListener("resize", resizeCanvas);
+  stream.addEventListener("load", resizeCanvas);
+  setInterval(resizeCanvas, 2000);
+
+  function normPoint(ev) {
+    var rect = canvas.getBoundingClientRect();
+    return [(ev.clientX - rect.left) / rect.width, (ev.clientY - rect.top) / rect.height];
+  }
+
+  function drawTaps() {
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#f80";
+    taps.forEach(function (pt) {
+      ctx.beginPath();
+      ctx.arc(pt[0] * canvas.width, pt[1] * canvas.height, 8, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+  }
+
+  // -- crop-mode drag rectangle ----------------------------------------------------------------
+  var cropRect = null;      // [x0,y0,x1,y1] normalised, while dragging in crop mode
+  var cropDragStart = null;
+
+  function drawCropRect() {
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!cropRect) { return; }
+    var x0 = cropRect[0] * canvas.width, y0 = cropRect[1] * canvas.height;
+    var x1 = cropRect[2] * canvas.width, y1 = cropRect[3] * canvas.height;
+    ctx.strokeStyle = "#ff8800";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  }
+
+  canvas.addEventListener("pointerdown", function (ev) {
+    canvas.setPointerCapture(ev.pointerId);
+    var pt = normPoint(ev);
+    if (inCropMode) {
+      cropDragStart = pt;
+      cropRect = [pt[0], pt[1], pt[0], pt[1]];
+      drawCropRect();
+      return;
+    }
+    taps.push(pt);
+    drawTaps();
+    if (taps.length === 2) {
+      var body = { x1: taps[0][0], y1: taps[0][1], x2: taps[1][0], y2: taps[1][1] };
+      apiFetch("/trigger", { method: "POST", body: JSON.stringify(body) })
+        .then(function () { setMsg("trigger line updated"); })
+        .catch(function (e) { setMsg("trigger update failed: " + e.message); });
+      taps = [];
+    }
+  });
+
+  canvas.addEventListener("pointermove", function (ev) {
+    if (!inCropMode || !cropDragStart) { return; }
+    var pt = normPoint(ev);
+    cropRect = [
+      Math.min(cropDragStart[0], pt[0]), Math.min(cropDragStart[1], pt[1]),
+      Math.max(cropDragStart[0], pt[0]), Math.max(cropDragStart[1], pt[1]),
+    ];
+    drawCropRect();
+  });
+
+  canvas.addEventListener("pointerup", function () { cropDragStart = null; });
+
+  // -- crop mode toggle + apply/reset ----------------------------------------------------------
+  var cropModeBtn = document.getElementById("cropModeBtn");
+  var cropControls = document.getElementById("cropControls");
+  var viewHint = document.getElementById("viewHint");
+
+  function setCropMode(on) {
+    inCropMode = on;
+    cropControls.classList.toggle("active", on);
+    viewHint.textContent = on
+      ? "Full frame -- drag a rectangle, then Apply."
+      : "Drag two points on the image to set the trigger line.";
+    taps = [];
+    cropRect = null;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    startStream();
+  }
+  cropModeBtn.addEventListener("click", function () { setCropMode(!inCropMode); });
+  document.getElementById("cropDoneBtn").addEventListener("click", function () { setCropMode(false); });
+
+  document.getElementById("cropApplyBtn").addEventListener("click", function () {
+    if (!cropRect) { setMsg("drag a rectangle first"); return; }
+    apiFetch("/settings", { method: "POST", body: JSON.stringify({ crop: cropRect }) })
+      .then(function () { setMsg("crop applied"); setCropMode(false); refreshSettings(); })
+      .catch(function (e) { setMsg("crop failed: " + e.message); });
+  });
+  document.getElementById("cropResetBtn").addEventListener("click", function () {
+    apiFetch("/settings", { method: "POST", body: JSON.stringify({ crop: [0, 0, 1, 1] }) })
+      .then(function () { setMsg("crop reset to full frame"); refreshSettings(); })
+      .catch(function (e) { setMsg("crop reset failed: " + e.message); });
+  });
+
+  // -- PTZ pad (hidden entirely when the camera has no motor -- /status.ptz_available) --------
+  var ptzGrid = document.getElementById("ptzGrid");
+  document.querySelectorAll(".ptz-grid button[data-dir]").forEach(function (btn) {
+    var dir = btn.getAttribute("data-dir");
+    if (!dir) { return; }
+    btn.addEventListener("click", function () {
+      apiFetch("/ptz", { method: "POST", body: JSON.stringify({ dir: dir, speed: 3, ms: 200 }) })
+        .then(function () { setMsg("nudged " + dir); })
+        .catch(function (e) { setMsg("ptz failed: " + e.message); });
+    });
+  });
+
+  // -- TEST button -------------------------------------------------------------------------
+  document.getElementById("testBtn").addEventListener("click", function () {
+    apiFetch("/test", { method: "POST", body: "{}" })
+      .then(function (r) { setMsg(r.queued ? "queued: " + r.line : "nothing to play"); })
+      .catch(function (e) { setMsg("test failed: " + e.message); });
+  });
+
+  // -- status strip (also drives the PTZ pad's visibility) ------------------------------------
+  function refreshStatus() {
+    apiFetch("/status")
+      .then(function (s) {
+        var el = document.getElementById("status");
+        var ok = !!(s.selftest && s.selftest.ok);
+        var speakerDead = s.speaker_ok === false;
+        el.classList.toggle("bad", !ok || speakerDead);
+        if (speakerDead) {
+          // Leads the strip: nothing else matters if lines aren't coming out.
+          el.textContent = "✗ SPEAKER FAILING: lines aren't playing. Check the dongle and PA cable. (" +
+            (s.speaker_error || "unknown error") + ")";
+          ptzGrid.style.display = s.ptz_available ? "grid" : "none";
+          return;
+        }
+        var parts = [ok ? "✓ Ready" : "✗ Self-test failed: " + ((s.selftest && s.selftest.failed_check) || "unknown")];
+        if (s.crowded) { parts.push("BUSY: standout costumes only"); }
+        if (s.source) { parts.push(s.source === "usb" ? "USB camera" : s.source + " camera"); }
+        if (typeof s.fps === "number") { parts.push(s.fps.toFixed(0) + " fps"); }
+        // `sink` is the Stage sink's class name: AlsaSink is the real speaker, anything else
+        // (WavSink, NullSink) means nothing audible is playing.
+        if (s.sink) { parts.push(s.sink === "AlsaSink" ? "speaker: " + (s.audio_device || "?") : "no speaker (" + s.sink + ")"); }
+        el.textContent = parts.join("  ·  ");
+        ptzGrid.style.display = s.ptz_available ? "grid" : "none";
+      })
+      .catch(function (e) {
+        var el = document.getElementById("status");
+        el.classList.add("bad");
+        el.textContent = "status unavailable: " + e.message;
+      });
+  }
+  setInterval(refreshStatus, 5000);
+  refreshStatus();
+
+  // -- event cards ------------------------------------------------------------------------------
+  // Everything on a card comes from model output (judge, line writer), so escape it.
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function nice(category) { return String(category || "?").replace(/_/g, " "); }
+  function headline(ev) {
+    // A card opens the moment someone crosses the line, before the judge has answered.
+    if (ev.is_costume == null && !ev.category) { return "judging…"; }
+    if (!ev.is_costume || !ev.costume) { return "no costume"; }
+    if (ev.pack_match_display) { return ev.pack_match_display + " · " + nice(ev.category); }
+    return (ev.costume || "?") + " · " + nice(ev.category);
+  }
+  // What kind of line played: freshly written, a costume-pack line, a category line, or none.
+  function pathBadge(ev) {
+    if (ev.path === "live") { return '<span class="badge live">live line</span>'; }
+    if (ev.pack) { return '<span class="badge pack">pack: ' + esc(ev.pack_match_display || ev.pack) + '</span>'; }
+    if (ev.path === "library") { return '<span class="badge">pre-recorded</span>'; }
+    if (ev.path === "dropped") { return '<span class="badge dropped">nothing played</span>'; }
+    if (ev.path === "skipped") { return '<span class="badge">skipped: judge busy</span>'; }
+    if (ev.path === "silent") { return '<span class="badge">no line (non-costumes off)</span>'; }
+    return '<span class="badge">' + esc(ev.path || "judging…") + '</span>';
+  }
+  var MS_NAMES = { judge: "judge", quip: "writing", voice_first_audio: "voice", total: "total" };
+  function msLine(ms) {
+    if (!ms) { return ""; }
+    return Object.keys(MS_NAMES).filter(function (k) { return ms[k] != null; }).map(function (k) {
+      return MS_NAMES[k] + " " + (ms[k] / 1000).toFixed(1) + " s";
+    }).join("  ·  ");
+  }
+  function renderCard(ev) {
+    var div = document.createElement("div");
+    div.className = "card" + (ev.blocked_text ? " blocked" : "");
+    var thumb = "";
+    if (ev.resolved !== false || true) {
+      thumb = '<img class="card-thumb" data-full="' + withToken("/event/" + ev.id + ".jpg") +
+        '" src="' + withToken("/event/" + ev.id + ".jpg") + '" alt="crop">';
+    }
+    // When a pack matched, the headline shows the pack's name; keep the judge's own words too.
+    var saw = (ev.is_costume && ev.costume && ev.pack_match_display)
+      ? '<div class="ts">judge saw: “' + esc(ev.costume) + '”</div>' : "";
+    // The judge's eye-catching rating (1-3): what decides who gets the line in a crowd.
+    if (ev.standout) {
+      saw += '<div class="ts">eye-catching: ' + ["", "barely a costume", "ordinary", "stand-out"][ev.standout] +
+        ' (' + ev.standout + '/3)</div>';
+    }
+    // Spotlight: a group was judged member by member; show who else was in it.
+    if (ev.spotlight && ev.spotlight.considered && ev.spotlight.considered.length > 1) {
+      var others = ev.spotlight.considered.filter(function (c) { return c.track !== ev.spotlight.track; })
+        .map(function (c) { return esc(c.costume || "?"); }).join(", ");
+      saw += '<div class="ts">spotlight: picked from a group of ' + ev.spotlight.considered.length +
+        (others ? ' (also: ' + others + ')' : '') + '</div>';
+    }
+    div.innerHTML =
+      '<div class="card-top">' + thumb +
+      '<div class="card-body">' +
+      '<div class="card-headline">' + esc(headline(ev)) + '</div>' + saw +
+      pathBadge(ev) +
+      (ev.line ? '<div class="card-line">“' + esc(ev.line) + '”</div>' : '<div class="ts">(no line yet)</div>') +
+      (ev.blocked_text ? '<div class="badge blocked">blocked live line: “' + esc(ev.blocked_text) + '” (' + esc(ev.blocked_reason || "?") + ')</div>' : '') +
+      '<div class="ms-row">' + msLine(ev.ms) + '</div>' +
+      '</div></div>';
+    div.querySelector(".card-thumb").addEventListener("click", function (e) {
+      document.getElementById("lightboxImg").src = e.target.getAttribute("data-full");
+      document.getElementById("lightbox").classList.add("open");
+    });
+    return div;
+  }
+  document.getElementById("lightbox").addEventListener("click", function () {
+    this.classList.remove("open");
+  });
+
+  // Hard cap on cards in the page, independent of the server's own 20-event ring: an
+  // hour-long race on a phone must not grow the page without bound. Cards are keyed by
+  // event id and only re-rendered while their content is still changing, so each crop
+  // image loads once instead of every refresh.
+  var MAX_CARDS = 12;
+  var cardState = {};  // id -> JSON of what that card last rendered
+  function refreshEvents() {
+    apiFetch("/events")
+      .then(function (r) {
+        var el = document.getElementById("cards");
+        var events = (r.events || []).slice().reverse().slice(0, MAX_CARDS);  // newest first
+        var keep = {};
+        events.forEach(function (ev, i) {
+          keep[ev.id] = true;
+          var sig = JSON.stringify(ev);
+          var existing = el.querySelector('[data-id="' + ev.id + '"]');
+          if (!existing || cardState[ev.id] !== sig) {
+            var card = renderCard(ev);
+            card.setAttribute("data-id", ev.id);
+            if (existing) { el.replaceChild(card, existing); } else { el.insertBefore(card, el.children[i] || null); }
+            cardState[ev.id] = sig;
+          }
+        });
+        Array.prototype.slice.call(el.children).forEach(function (c) {
+          var id = c.getAttribute("data-id");
+          if (!keep[id]) { el.removeChild(c); delete cardState[id]; }
+        });
+      })
+      .catch(function () { /* quiet -- status strip already shows trouble */ });
+  }
+  setInterval(refreshEvents, 3000);
+  refreshEvents();
+
+  // -- settings panel: generic numeric sliders from /settings' ranges, plus toggles -----------
+  // group_window_s is deliberately absent: the pipeline stopped reading it (perceive.py's
+  // grouping amendment, 2026-10-15), and a slider that does nothing misleads at the course.
+  var SETTING_LABELS = {
+    min_bbox_height: "Smallest runner (share of picture height)",
+    detector_min_confidence: "Person-detector certainty",
+    stage_cooldown_s: "Gap after each line (s)",
+    orchestrator_budget_s: "Wait for a fresh line (s)",
+    volume_pct: "Speaker output (%)",
+    max_judging: "Runners handled at once",
+    crowd_crossings: "Busy mode kicks in at (crossings per 10 s)",
+    busy_gap_s: "Gap after each line when busy (s)",
+    max_line_age_s: "Latest a line may start after the crossing (s)",
+  };
+  var SETTING_HINTS = {
+    min_bbox_height: "Lower catches runners further away. Too low and distant spectators trigger it.",
+    detector_min_confidence: "Lower catches inflatables and mascots. Too low and odd shapes trigger it.",
+    stage_cooldown_s: "Silence after each line finishes, before the next one.",
+    orchestrator_budget_s: "How long to wait for a freshly written line before playing a pre-recorded one.",
+    volume_pct: "The dongle's output. Set loudness on the PA; drop this only if the PA distorts.",
+    max_judging: "Crossings beyond this while the judge is busy are skipped. Lower = keeps up in crowds.",
+    crowd_crossings: "This many people crossing within 10 s switches to standout-costumes-only. It switches back once the crowd thins.",
+    busy_gap_s: "Shorter than the normal gap so more standout costumes get a line in a crowd. Shorter lines are picked too.",
+    max_line_age_s: "Match the speaker distance: a runner at a jog covers about 3 m a second. Too short and stand-outs expire while another line plays.",
+  };
+  var SETTING_STEPS = {
+    min_bbox_height: 0.01,
+    detector_min_confidence: 0.01,
+    stage_cooldown_s: 0.5,
+    orchestrator_budget_s: 0.1,
+    volume_pct: 5,
+    max_judging: 1,
+    crowd_crossings: 1,
+    busy_gap_s: 0.5,
+    max_line_age_s: 0.5,
+  };
+  // Shown as a percentage, sent as a 0..1 fraction.
+  var PERCENT_SHOWN = { min_bbox_height: true, detector_min_confidence: true };
+  function shown(key, v) {
+    v = parseFloat(v);
+    if (key === "max_judging" || key === "crowd_crossings") { return String(Math.round(v)); }
+    return PERCENT_SHOWN[key] ? Math.round(v * 100) + "%" : (key === "volume_pct" ? Math.round(v) + "%" : v + " s");
+  }
+  var TOGGLE_LABELS = {
+    live_lines_enabled: "Live lines (off = pre-recorded only)",
+    roast_non_costumes: "Heckle non-costumed runners",
+    spotlight: "Spotlight: in a group, give the line to the standout costume",
+    busy_mode: "Busy mode (automatic): in a crowd, only standout costumes",
+    skip_generic: "Never play “can't tell what you are” lines",
+  };
+
+  function applySetting(key, value) {
+    var patch = {};
+    patch[key] = value;
+    return apiFetch("/settings", { method: "POST", body: JSON.stringify(patch) });
+  }
+
+  function renderSettings(body) {
+    var el = document.getElementById("settingsBody");
+    el.innerHTML = "";
+    var values = body.values || {};
+    var ranges = body.ranges || {};
+    Object.keys(SETTING_LABELS).forEach(function (key) {
+      var range = ranges[key] || [0, 1];
+      var wrap = document.createElement("div");
+      wrap.className = "setting";
+      wrap.innerHTML =
+        '<label>' + SETTING_LABELS[key] + ': <span class="val">' + shown(key, values[key]) + '</span></label>' +
+        '<input type="range" min="' + range[0] + '" max="' + range[1] + '" step="' +
+        (SETTING_STEPS[key] || 0.01) + '" value="' + values[key] + '">' +
+        '<div class="hint">' + (SETTING_HINTS[key] || "") + '</div>';
+      var input = wrap.querySelector("input");
+      var valSpan = wrap.querySelector(".val");
+      input.addEventListener("input", function () { valSpan.textContent = shown(key, input.value); });
+      input.addEventListener("change", function () {
+        applySetting(key, parseFloat(input.value))
+          .then(function () { setMsg(SETTING_LABELS[key] + " applied"); })
+          .catch(function (e) { setMsg("setting failed: " + e.message); refreshSettings(); });
+      });
+      el.appendChild(wrap);
+    });
+    Object.keys(TOGGLE_LABELS).forEach(function (key) {
+      var row = document.createElement("div");
+      row.className = "toggle-row";
+      row.innerHTML =
+        '<label>' + TOGGLE_LABELS[key] + '</label>' +
+        '<input type="checkbox"' + (values[key] ? " checked" : "") + '>';
+      var box = row.querySelector("input");
+      box.addEventListener("change", function () {
+        applySetting(key, box.checked)
+          .then(function () { setMsg(TOGGLE_LABELS[key] + " applied"); })
+          .catch(function (e) { setMsg("setting failed: " + e.message); refreshSettings(); });
+      });
+      el.appendChild(row);
+    });
+  }
+
+  function refreshSettings() {
+    apiFetch("/settings")
+      .then(renderSettings)
+      .catch(function (e) { setMsg("settings unavailable: " + e.message); });
+  }
+  refreshSettings();
+
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    apiFetch("/settings/reset", { method: "POST", body: "{}" })
+      .then(function (body) { setMsg("settings reset to defaults"); renderSettings(body); })
+      .catch(function (e) { setMsg("reset failed: " + e.message); });
+  });
+})();
+</script>
+</body>
+</html>

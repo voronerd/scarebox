@@ -1,0 +1,21 @@
+# Example udev rule pinning the race-day USB audio dongle to a stable ALSA card name
+# (`scarebox_out`, matching `stage.alsa_device` in config/*.yaml) and disabling USB
+# autosuspend for it, so ALSA never sees the card vanish mid-run.
+#
+# This is a TEMPLATE only -- it is not installed by any script. Phase 4 (04-01) installs
+# the real version with Martin present, once he has the actual dongle to read vendor/
+# product IDs off (`lsusb` or `udevadm info -a -n /dev/snd/controlC<N>`).
+#
+# To use:
+#   1. Plug the dongle in, find it: `cat /proc/asound/cards` and `lsusb`.
+#   2. Replace ATTRS{idVendor}/ATTRS{idProduct} below with the real 4-hex-digit IDs.
+#   3. Copy to /etc/udev/rules.d/99-scarebox-audio.rules (needs root -- never `sudo` on
+#      gbox1 as the `scarebox` user; this install step is Martin's, not the app's).
+#   4. `udevadm control --reload-rules && udevadm trigger`.
+#
+# SUBSYSTEM=="sound", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="YYYY", ATTR{id}="scarebox_out"
+#
+# Keep the card's USB autosuspend off -- a suspended dongle drops audio for the first
+# fraction of a second of every line, which the heckler can't afford.
+#
+# SUBSYSTEM=="usb", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="YYYY", TEST=="power/control", ATTR{power/control}="on"

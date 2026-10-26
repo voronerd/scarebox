@@ -1,0 +1,30 @@
+# Installation overlay -- copy to config/local.yaml (git-ignored) and fill in YOUR values.
+#
+# scarebox/config.py loads any config in config/ (field.yaml, replay.yaml, bench.yaml, ...)
+# and then deep-merges config/local.yaml over it: a mapping merges key by key, anything else
+# (a string, a list) replaces the base value outright. The merged result is validated exactly
+# like a base config, so a typo'd key here is an error, not silently ignored. An empty or
+# missing local.yaml changes nothing.
+#
+# These are the values only one installation needs. They stay out of the tracked configs so
+# the repo carries no one's camera or network details. Secrets (camera password, aim token)
+# still belong in .env, not here. The values below are placeholders: a locally administered
+# MAC and an RFC 5737 documentation network.
+
+camera:
+  # The camera's wired (eth0) MAC address. config/field.yaml leaves camera.host empty, so
+  # scarebox/discover.py finds the camera by this MAC on whatever /24 the router hands out.
+  # Only needed when source.kind is rtsp (the race config uses a USB webcam).
+  # Read it from the camera's web UI or its CGI:
+  #   configManager.cgi?action=getConfig&name=Network
+  mac: "02:00:00:00:00:01"
+
+aim:
+  # Networks (CIDR) whose clients reach the phone aim page WITHOUT AIM_TOKEN -- normally the
+  # travel router's password-protected LAN/Wi-Fi, optionally your home LAN too. A list here
+  # replaces config/field.yaml's (empty) list. Leave it [] to always require the token.
+  #
+  # The router's fixed address for the box: give the box a DHCP reservation (or a static
+  # address) on the router so the aim page has a URL you can bookmark, e.g.
+  # http://198.51.100.10:8090/ -- that address must sit inside one of these networks.
+  trusted_networks: ["198.51.100.0/24"]

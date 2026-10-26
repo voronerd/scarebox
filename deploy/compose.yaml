@@ -1,0 +1,211 @@
+# Full scarebox stack: `vlm` + `guard` + `tts` + `app`. 04-01 adds `restart: unless-stopped` +
+# healthchecks on all three for the race (spec §5.2) -- but a Docker healthcheck only marks
+# a container `unhealthy`, it never restarts one on its own; `app`'s own internal watchdog
+# (scarebox/app.py:_watchdog) is what actually self-exits on a hang so `unless-stopped`
+# has something to act on. `unless-stopped` also won't START a stack that was powered off --
+# `deploy/host/scarebox.service` is the boot-time backstop for that (see its README).
+#
+# Usage (from repo root, on gbox1, user `scarebox`, compose project name `scarebox`):
+#   docker compose -p scarebox -f deploy/compose.yaml --env-file deploy/images.env up -d
+#   # vlm/guard healthchecks gate `app`'s own start (depends_on: service_healthy) --
+#   # `app` runs the self-test as soon as it comes up and plays meta-ready (or meta-err-*).
+#   docker compose -p scarebox -f deploy/compose.yaml down
+#
+# Required env (deploy/images.env, loaded via --env-file):
+#   IMAGE_VLLM  - pinned vLLM image ref (used for BOTH vlm and guard)
+#
+# Ports: vlm binds 127.0.0.1:8100 only (never a port gbox1 already uses for other work --
+# 8000/8080/8001/11434/9835 are all avoided). `app` uses `network_mode: host` to reach it
+# (gbox1's firewall table filters other inter-container paths -- 02-02 plan rule).
+services:
+  vlm:
+    image: ${IMAGE_VLLM}
+    container_name: scarebox-vlm
+    environment:
+      HF_HUB_OFFLINE: "1"
+    volumes:
+      - ${HOME}/models/Qwen3-VL-4B-Instruct-FP8:/model:ro
+    network_mode: host
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8100/v1/models', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 40
+      start_period: 240s
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        vllm serve /model
+        --served-model-name qwen3-vl-4b-fp8
+        --max-model-len 4096
+        --max-num-seqs 4
+        --host 127.0.0.1
+        --port 8100
+        --trust-remote-code
+        --gpu-memory-utilization 0.3
+        --kv-cache-memory-bytes 4294967296
+    restart: unless-stopped
+
+  guard:
+    image: ${IMAGE_VLLM}
+    container_name: scarebox-guard
+    environment:
+      HF_HUB_OFFLINE: "1"
+    volumes:
+      - ${HOME}/models/granite-guardian-3.2-3b-a800m:/model:ro
+    network_mode: host
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8101/v1/models', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 40
+      start_period: 120s
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        vllm serve /model
+        --served-model-name granite-guardian
+        --max-model-len 2048
+        --host 127.0.0.1
+        --port 8101
+        --trust-remote-code
+        --gpu-memory-utilization 0.15
+        --kv-cache-memory-bytes 1073741824
+    restart: unless-stopped
+
+  tts:
+    # 2026-10-16: Chatterbox George (Martin's pick over Kokoro). Own image -- Chatterbox needs a
+    # matched torch/torchaudio cu130 pair the NGC app image can't host. Build:
+    #   docker build -t scarebox/tts-chatterbox:dev -f deploy/Dockerfile.chatterbox deploy
+    # Serves 127.0.0.1:8102 (deploy/chatterbox/server.py); verified to start with no network.
+    image: scarebox/tts-chatterbox:dev
+    container_name: scarebox-tts
+    user: "1001:1001"
+    environment:
+      HOME: /tmp
+      USER: scarebox      # torch inductor calls getpass; uid 1001 has no passwd entry in the image
+      LOGNAME: scarebox
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      CB_PORT: "8102"
+    volumes:
+      - ${PWD}:/app:ro
+      - ${HOME}/models:/models:ro
+    command: ["python3.12", "/app/deploy/chatterbox/server.py"]
+    network_mode: host
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - python3.12
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8102/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    restart: unless-stopped
+
+  app:
+    image: scarebox/app:dev
+    container_name: scarebox-app
+    user: "1001:1001"
+    environment:
+      HOME: /tmp
+    # `up -d` (no explicit command) must autostart the real pipeline -- that's this whole
+    # phase's point, nobody types a command on race day. SCAREBOX_CONFIG overrides which
+    # YAML (bench vs the race config) without editing this file; bench verification runs
+    # `SCAREBOX_CONFIG=config/bench.yaml docker compose ... up -d`.
+    command: ["python", "-m", "scarebox", "run", "--config", "${SCAREBOX_CONFIG:-config/scarebox.example.yaml}"]
+    # Compose's default project directory is the COMPOSE FILE's own directory
+    # (deploy/), not the invoking shell's cwd -- a bare `./` here silently bind-mounted
+    # deploy/ itself over /app (confirmed via `docker compose config`, 2026-10-15: repo
+    # code/scripts/tests were simply missing in-container). `${PWD}` is interpolated from
+    # the INVOKING shell's environment (always exported), so it correctly resolves to the
+    # repo root as long as every `docker compose ... -f deploy/compose.yaml` invocation is
+    # run from the repo root (true for every documented usage above and in docs/RUNBOOK.md).
+    volumes:
+      - ${PWD}:/app
+      - ${HOME}/models:/app/models:ro
+      - ${PWD}/runs:/app/runs
+      # USB webcam (source.kind usb, 2026-10-19). The host's whole /dev, read-only, at
+      # /host-dev, so a camera replugged mid-race (new /dev/videoN) is seen without recreating
+      # the container. A mapped `devices:` entry would make the app refuse to start whenever
+      # the camera is unplugged. device_cgroup_rules below grants video nodes only (major 81).
+      - /dev:/host-dev:ro
+      # Sound devices, live (2026-10-19): `devices: - /dev/snd` copied the nodes ONCE at
+      # container start, so a replugged USB audio dongle (Martin swapped a hub) vanished from
+      # the container and every line failed with "aplay: No such device" until a restart. A
+      # bind mount shows replugged nodes immediately; the cgroup rule below allows ALSA
+      # (major 116), the same way 81 allows the webcam.
+      - /dev/snd:/dev/snd
+    working_dir: /app
+    device_cgroup_rules:
+      - "c 81:* rmw"
+      - "c 116:* rmw"
+    # The container user (1001) needs the HOST's `audio` group (GID 29 on gbox1, `getent
+    # group audio`) to actually open /dev/snd -- group_add takes a numeric GID, no matching
+    # /etc/group entry needed inside the image.
+    group_add:
+      - "29"
+      - "44"   # host `video` group (getent group video): the webcam's /dev/video* nodes
+    network_mode: host
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - "import pathlib,time,sys; p=pathlib.Path('/app/runs/heartbeat'); sys.exit(0 if p.exists() and time.time()-p.stat().st_mtime<=15 else 1)"
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+    depends_on:
+      vlm:
+        condition: service_healthy
+      guard:
+        condition: service_healthy
+      tts:
+        condition: service_healthy
+    restart: unless-stopped

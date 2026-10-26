@@ -1,0 +1,84 @@
+# tests/redteam/ok.txt -- every line below MUST pass Censor.check() (spec §7).
+#
+# Format: "line text |CAT| category" -- category matters for the costume allowlist (e.g.
+# "dead" is only exempted for pirate/zombie/skeleton/ghost; "baby shark" for any category).
+# Loader: tests/test_censor.py's _load_ok_lines().
+#
+# First 40 lines: drawn verbatim from the approved library (library/manifest.json), one or
+# two per costume category, spread across all 26 categories. Last 20: tricky-but-fine lines
+# that sound like they might trip the filter (costume-themed "dead", idioms that sound
+# violent/criminal, word-boundary near-misses like "killer") but are harmless -- these
+# exercise the costume allowlist (03-01 plan) and the word-boundary precision of the
+# blocklist regex, not just plain clean sentences.
+
+# -- 40 from the library --
+A splendid creature of the animal kingdom joins the race. |CAT| animal
+A dinosaur, extinct for sixty-five million years, still better dressed than most. |CAT| dinosaur
+A dog joins the race! Four paws, one excellent attitude. |CAT| dog
+A fairy, tutu and all! Do mind the wings on the turn. |CAT| fairy_tutu
+A costume shaped like food! Delicious and thoroughly amusing. |CAT| food
+A ghost glides by! How delightfully translucent of you to attend. |CAT| ghost
+A whole gathering of costumes approaches! The variety is simply magnificent. |CAT| group
+A homemade costume! The cardboard craftsmanship is truly splendid. |CAT| homemade_box
+An inflatable costume! Majestic, round, and gloriously buoyant. |CAT| inflatable
+The adjudicator is seated. Proceed, ye costumed hordes. |CAT| meta
+A monster joins the race! Delightfully fuzzy and quite friendly. |CAT| monster
+A movie character joins the race! Quite the cinematic entrance. |CAT| movie_character
+A mummy, wrapped to perfection, a triumph of amateur bandaging. |CAT| mummy
+A costume of considerable mystery has entered the race today. |CAT| mystery
+Splendid stride, carry on! The course awaits your triumph. |CAT| no_costume
+A pirate! How frightfully nautical of you to attend. |CAT| pirate
+A princess graces the course! Do mind the tiara, your highness. |CAT| princess
+A pumpkin costume! Round, orange, and thoroughly delightful. |CAT| pumpkin
+A robot! I do hope you've brought spare batteries for the encore. |CAT| robot_space
+A skeleton rattles by! Those bones have excellent comic timing. |CAT| skeleton
+A sporting uniform! Splendidly festive for a Halloween fun run. |CAT| sports_uniform
+A stroller rolls by! The youngest competitor is remarkably composed. |CAT| stroller
+Ah, a superhero! Do try not to save anyone before the finish line. |CAT| superhero
+A vampire joins the race! That cape billows most dramatically. |CAT| vampire
+A witch, hat and all! Mind the broomstick on the corner. |CAT| witch_wizard
+A zombie shuffles by, remarkably well dressed for the undead. |CAT| zombie
+That costume is delightfully furry. Bravo, fine beast. |CAT| animal
+That inflatable dinosaur suit is magnificently prehistoric. Roar on. |CAT| dinosaur
+That good dog is clearly having the time of its life. |CAT| dog
+Sprinkled in glitter and tulle, off on a magical dash. |CAT| fairy_tutu
+That costume looks remarkably edible. Bravo, culinary creation. |CAT| food
+Ooooh, a spectre! The morning has taken a haunting turn. |CAT| ghost
+What a splendid assembly! Every costume here deserves its own ovation. |CAT| group
+That box costume is a triumph of ingenuity and tape. |CAT| homemade_box
+That inflatable suit bounces magnificently with every step. |CAT| inflatable
+Systems splendid, chair comfortable, judgement ready. Let the race commence. |CAT| meta
+That monster costume is magnificently furry. Bravo, beastly one. |CAT| monster
+That costume is splendidly recognisable. Bravo, silver screen star. |CAT| movie_character
+Those bandages are immaculately applied. Bravo, ancient wanderer. |CAT| mummy
+I cannot quite place that costume, but it is splendid nonetheless. |CAT| mystery
+
+# -- 20 tricky-but-fine --
+A skeleton! Positively dead on time. |CAT| skeleton
+The walking dead have arrived, right on cue for Halloween. |CAT| zombie
+That ghost looks positively dead chuffed with its costume. |CAT| ghost
+That pirate looks like a proper dead pirate, ready to haunt. |CAT| pirate
+A baby shark costume, doo doo doo doo, straight to the line. |CAT| animal
+What a smashing costume, truly the bee's knees this morning. |CAT| meta
+This witch's broomstick could win on looks alone. |CAT| witch_wizard
+A mummy wrapped so neatly it could pass inspection. |CAT| mummy
+That dinosaur costume roars louder than the starting gun. |CAT| dinosaur
+A robot so clanky it could out-dance a tin man. |CAT| robot_space
+That inflatable costume survived a hit of confetti unscathed. |CAT| inflatable
+A food costume so good I could eat my own words. |CAT| food
+That fairy costume sparkles like it robbed a glitter factory. |CAT| fairy_tutu
+A vampire with a killer cape, if ever there was one. |CAT| vampire
+A homemade box costume held together by hope and tape. |CAT| homemade_box
+That princess costume reigns supreme over the start line. |CAT| princess
+A superhero cape fluttering like a flag of pure triumph. |CAT| superhero
+A mystery costume so baffling it needs a magnifying glass. |CAT| mystery
+A group costume so coordinated it deserves its own medal. |CAT| group
+A pumpkin costume glowing brighter than the morning sun. |CAT| pumpkin
+
+# finish-line goading (Martin, 2026-10-16): pace goading is allowed
+Not long to go, pirate! Full sail to the finish! |CAT| pirate
+Run, don't crawl, zombie! The finish line awaits! |CAT| zombie
+Chop chop, Princess! The royal ball begins at the finish! |CAT| princess
+Get a move on, dinosaur! Stomp to the finish! |CAT| dinosaur
+Nearly there, runner! Sprint for the line! |CAT| no_costume
+Go, go, go, superhero! Save the finish line! |CAT| superhero

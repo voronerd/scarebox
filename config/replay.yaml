@@ -1,0 +1,118 @@
+# REPLAY config (2026-10-19): config/field.yaml (the race settings) with four changes for
+# tuning over Martin's test video: source = the video file, sink = timed (silent but busy
+# for each line's length), capture on (runs/capture/<run>/), aim page on :8092 so the live
+# box can keep running. Everything else matches the race. The original header follows.
+#
+# Race-day config: HCA Halloween 5k. Copy of config/scarebox.example.yaml with the picks
+# this plan locks in -- live camera over RTSP, found by MAC (not a fixed IP), the vetted
+# library enforced, and the real ALSA dongle as the only sink. Secrets (camera password,
+# aim token) come from the same .env as at home (one .env file for home and race; the
+# camera is found by MAC so no IP needs changing), never from this file.
+#
+# TRAVEL ROUTER, IN PLAIN ENGLISH: race day runs on a GL.iNet Slate AX (GL-AXT1800) travel
+# router, not the home network. It hands out addresses by DHCP -- both gbox1 (this box) and
+# the camera get an address on the router's LAN automatically, and neither address is
+# predictable in advance. That's exactly why `camera.host` below is empty and the camera is
+# found by its hardware address (MAC) instead: `scarebox/discover.py` scans whatever /24 it
+# lands on, so there's nothing to reconfigure between the home test bench and the race.
+#
+# INSTALLATION VALUES LIVE IN config/local.yaml (git-ignored, deep-merged over this file by
+# scarebox/config.py; see config/local.example.yaml): the camera's MAC (its wired `eth0`,
+# read via its CGI `configManager.cgi?action=getConfig&name=Network`, because the camera is
+# plugged into the travel router's LAN port on race day) and the networks the aim page
+# trusts without a token. Without the overlay the MAC is empty (fine while source.kind is
+# usb) and the aim page always asks for the token.
+
+camera:
+  host: ""                        # empty -> resolved by MAC, not a fixed address (see above)
+  mac: ""                         # set in config/local.yaml (see header)
+  user: ${CAMERA_USER}
+  password: ${CAMERA_PASSWORD}
+  rtsp_path: /cam/realmonitor?channel=1&subtype=1
+  set_clock_on_start: true        # camera has no RTC battery; clock resets on power loss
+
+source:
+  kind: file                      # your own test footage (Martin used a 19-min 1080p30 costume walk)
+  file: testdata/hallway30.mp4
+  loop: false
+  usb_name: WB7022                # Dell UltraSharp webcam; found by name, so a replug is fine
+  usb_dev_dir: /host-dev          # compose mounts the host's /dev here
+  width: 1920                     # 1080p MJPG@30: held 30 fps, 0 failed reads over 20 min
+  height: 1080
+  fps: 30
+
+perceive:
+  detector: yolox_s
+  min_confidence: 0.5
+  trigger_line: [[0.55, 0.0], [0.55, 1.0]]
+  min_bbox_height: 0.25
+  group_band: 0.08
+  group_window_s: 1.5
+  best_crop_frames: 1              # Phase 3 pick: the hub's lever ladder (03-03)
+
+judge:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8
+  crop_max_px: 512
+  timeout_s: 2.0
+  min_confidence: 0.0              # see scarebox.example.yaml: confidence is uncorrelated
+                                    # with correctness on this model (scripts/calibrate_judge.py)
+  schema: lean                     # Phase 3 pick: c/k/d only, drops confidence/is_costume/group_size
+
+quip:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8
+  max_words: 15
+  roast_non_costumes: true
+  timeout_s: 1.5
+  single_call: false
+  single_call_timeout_s: 2.5
+
+censor:
+  blocklist: config/blocklist.txt
+  guard_endpoint: http://127.0.0.1:8101/v1
+  guard_model: granite-guardian
+  fail_closed: true
+  guard_timeout_s: 0.6
+
+voice:
+  engine: chatterbox              # Martin 2026-10-16: Chatterbox George (scarebox-tts container); kokoro still works
+  voice: bm_george                 # Kokoro voice used when engine: kokoro (tie-break pick, docs/MODELS.md)
+  reference_clip: library/voice/reference.wav
+  exaggeration: 0.7
+  fx_chain: megaphone          # Martin 2026-10-16: variant E (loud-hailer)
+  speed: 1.25
+  kokoro_dir: models/Kokoro-82M
+  stream_segments: true    # one TTS request per sentence: 9.5% live share vs 3% whole-line (cb A/B 2026-10-16)
+  tts_url: http://127.0.0.1:8102
+  tts_timeout_s: 3.0
+
+stage:
+  alsa_device: scarebox_out        # udev-pinned stable name for the USB dongle (deploy/host/)
+  sink: timed                      # silent, but busy for each line's real length (speaker occupancy)
+  cooldown_s: 2.5                  # silence after each line ENDS (Martin 2026-10-19: lines ran together)
+  queue_max: 6                     # busy mode picks the best of these, so it needs a few to choose from
+  stings: false                    # Martin 2026-10-19: no chime before each line
+
+orchestrator:
+  budget_s: 3.5
+  max_line_age_s: 9.0              # speaker sits down the path (2026-10-20); 5 s expired every stand-out queued behind a line. Phone page slider overrides
+  max_live_inflight: 1
+
+library:
+  manifest: library/manifest.json
+  packs: library/costume_packs.json   # costume-specific lines, matched from the judge's costume string
+  require_approved: true           # race: refuse to start with any unvetted line (spec §6.3)
+
+aim:
+  listen: 0.0.0.0:8092              # not 8090: the live box can keep running alongside
+  tuning_file: runs/tuning.replay.json  # own settings: full-frame crop, not the live webcam's
+
+watchdog:
+  frame_timeout_s: 30.0
+  tick_timeout_s: 20.0
+  debug_hooks: false        # 04-03: true only in config/soak.yaml (the soak's hang injection)
+
+capture:
+  enabled: true                   # the per-run tuning log (scarebox/capture.py)
+  dir: runs/capture

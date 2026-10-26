@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scarebox"
+version = "0.1.0"
+description = "Offline AI heckler for the HCA Halloween 5k."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Martin Sawtell" }]
+dependencies = [
+    "pyyaml",
+    "httpx",
+    "numpy",
+    "scipy",
+    "pillow",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["scarebox"]

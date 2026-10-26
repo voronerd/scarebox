@@ -1,0 +1,14 @@
+# udev rule pinning the race-day USB audio dongle to a stable ALSA card name
+# (`scarebox_out`, matching `stage.alsa_device` in config/*.yaml) and disabling USB
+# autosuspend for it, so ALSA never sees the card vanish mid-run.
+#
+# Dongle: GeneralPlus "USB Audio Device", USB ID 1b3f:2008 (lsusb on gbox1, 2026-10-19).
+# A different dongle needs these two IDs changed: `lsusb`, or
+# `udevadm info -a -n /dev/snd/controlC<N> | grep -E 'idVendor|idProduct'`.
+# Install: needs root, see deploy/host/README.md.
+
+SUBSYSTEM=="sound", KERNEL=="card*", ATTRS{idVendor}=="1b3f", ATTRS{idProduct}=="2008", ATTR{id}="scarebox_out"
+
+# Keep the card's USB autosuspend off -- a suspended dongle drops audio for the first
+# fraction of a second of every line, which the heckler can't afford.
+SUBSYSTEM=="usb", ATTR{idVendor}=="1b3f", ATTR{idProduct}=="2008", TEST=="power/control", ATTR{power/control}="on"

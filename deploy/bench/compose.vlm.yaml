@@ -1,0 +1,76 @@
+# One-service vLLM bench server. Model path/name and vLLM args come from env vars so this one
+# file serves every 01-03 candidate (Qwen3-VL-4B/8B, SmolVLM2-2.2B) -- set the env, `up`, bench,
+# `down`, repeat (project rule: one model server at a time, project name scarebox-bench).
+#
+# Usage (from repo root, on gbox1):
+#   MODEL_DIR=$HOME/models/Qwen3-VL-4B-Instruct MODEL_NAME=qwen3-vl-4b \
+#     docker compose -p scarebox-bench -f deploy/bench/compose.vlm.yaml \
+#       --env-file deploy/images.env up -d
+#   ... wait for http://127.0.0.1:8100/v1/models, run scripts/bench_vlm.py ...
+#   docker compose -p scarebox-bench -f deploy/bench/compose.vlm.yaml down
+#
+# Required env:
+#   IMAGE_VLLM  - pinned image ref (deploy/images.env, loaded via --env-file)
+#   MODEL_DIR   - host path to the model weights, e.g. $HOME/models/Qwen3-VL-4B-Instruct
+#   MODEL_NAME  - --served-model-name value, e.g. qwen3-vl-4b
+# Optional overrides (plan rule: never a bare --gpu-memory-utilization; record any fallback):
+#   VLLM_MEM_FLAG   - default --kv-cache-memory-bytes
+#   VLLM_MEM_VALUE  - default 4294967296 (4 GiB)
+#   VLLM_GPU_UTIL   - default 0.3. GB10 is unified memory: vllm's startup sanity check
+#                     (vllm/v1/worker/utils.py request_memory) always gates on
+#                     total_memory * gpu_memory_utilization BEFORE kv-cache-memory-bytes is
+#                     applied, even though kv-cache-memory-bytes then "ignores
+#                     gpu_memory_utilization" for the actual cache sizing (confirmed via
+#                     `vllm serve --help=CacheConfig` + source read, 2026-10-15). Default
+#                     gpu-memory-utilization (0.92) demands 111.9 GiB free on a 121.63 GiB
+#                     unified pool with only ~99 GiB free -- fails every time. So both flags are
+#                     always passed together: --gpu-memory-utilization just to pass the gate,
+#                     --kv-cache-memory-bytes to actually size the cache. This is not the
+#                     bare-gpu-memory-utilization case the plan warns against (that means using
+#                     it as the ONLY memory control with no byte-level cap).
+#   VLLM_EXTRA_ARGS - appended verbatim, e.g. --enforce-eager if CUDA graph capture fails
+services:
+  vlm:
+    image: ${IMAGE_VLLM}
+    container_name: scarebox-bench-vlm
+    environment:
+      HF_HUB_OFFLINE: "1"
+      MODEL_NAME: ${MODEL_NAME}
+      VLLM_MEM_FLAG: ${VLLM_MEM_FLAG:---kv-cache-memory-bytes}
+      VLLM_MEM_VALUE: ${VLLM_MEM_VALUE:-4294967296}
+      VLLM_GPU_UTIL: ${VLLM_GPU_UTIL:-0.3}
+      VLLM_EXTRA_ARGS: ${VLLM_EXTRA_ARGS:-}
+    volumes:
+      - ${MODEL_DIR}:/model:ro
+    ports:
+      - "127.0.0.1:8100:8000"
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # NOTE: every $VAR below is double-dollar-escaped ($$VAR). Compose interpolates plain $VAR
+    # in a command STRING at compose-parse time (client-side), using the invoker's shell/
+    # --env-file scope -- it ignores this service's own `environment:` defaults above and
+    # silently collapses to "" for anything not in that outer scope (bit us 2026-10-15: every
+    # memory flag vanished, leaving a bare `--gpu-memory-utilization` with no value). $$VAR
+    # passes a literal $VAR through so the CONTAINER's own /bin/sh -c expands it from the real
+    # (correctly-defaulted) container environment at runtime.
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        vllm serve /model
+        --served-model-name "$$MODEL_NAME"
+        --max-model-len 4096
+        --max-num-seqs 4
+        --host 0.0.0.0
+        --port 8000
+        --trust-remote-code
+        --gpu-memory-utilization $$VLLM_GPU_UTIL
+        $$VLLM_MEM_FLAG $$VLLM_MEM_VALUE
+        $$VLLM_EXTRA_ARGS
+    restart: "no"

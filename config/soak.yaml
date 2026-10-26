@@ -1,0 +1,99 @@
+# 04-03 soak overlay: `config/bench.yaml` with the deltas the 2h soak needs --
+# `source.loop: true` (replay.mp4 loops forever instead of exiting after one pass) and
+# `watchdog.debug_hooks: true` (lets `scripts/soak.sh` inject a software hang; see
+# `scarebox/config.py`'s `WatchdogConfig.debug_hooks` and `app.py`'s per-frame check).
+# Everything else is identical to bench.yaml -- `stage.sink: wav` (no ALSA device needed
+# on gbox1), `library.require_approved: false` (the soak plays whatever lines exist,
+# approved or not -- it's testing stability, not line quality).
+
+camera:
+  host: ${CAMERA_HOST}
+  mac: ""
+  user: ${CAMERA_USER}
+  password: ${CAMERA_PASSWORD}
+  rtsp_path: /cam/realmonitor?channel=1&subtype=1
+  set_clock_on_start: false
+
+source:
+  kind: file
+  file: testdata/replay.mp4
+  loop: true
+  usb_name: WB7022               # unused when kind: file
+  usb_dev_dir: /host-dev
+  width: 1920
+  height: 1080
+  fps: 30
+
+perceive:
+  detector: yolox_s
+  min_confidence: 0.5
+  trigger_line: [[0.55, 0.0], [0.55, 1.0]]
+  min_bbox_height: 0.25
+  group_band: 0.08
+  group_window_s: 1.5
+  best_crop_frames: 1
+
+judge:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8
+  crop_max_px: 512
+  timeout_s: 2.0
+  min_confidence: 0.0
+  schema: lean
+
+quip:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8
+  max_words: 15
+  roast_non_costumes: true
+  timeout_s: 1.5
+  single_call: false
+  single_call_timeout_s: 2.5
+
+censor:
+  blocklist: config/blocklist.txt
+  guard_endpoint: http://127.0.0.1:8101/v1
+  guard_model: granite-guardian
+  fail_closed: true
+  guard_timeout_s: 0.6
+
+voice:
+  engine: chatterbox              # Martin 2026-10-16: Chatterbox George (scarebox-tts container); kokoro still works
+  voice: bm_george
+  reference_clip: library/voice/reference.wav
+  exaggeration: 0.7
+  fx_chain: megaphone          # Martin 2026-10-16: variant E (loud-hailer)
+  speed: 1.25
+  kokoro_dir: models/Kokoro-82M
+  stream_segments: true    # one TTS request per sentence: 9.5% live share vs 3% whole-line (cb A/B 2026-10-16)
+  tts_url: http://127.0.0.1:8102
+  tts_timeout_s: 3.0
+
+stage:
+  alsa_device: scarebox_out
+  sink: wav
+  cooldown_s: 1.0
+  queue_max: 2
+  stings: false
+
+orchestrator:
+  budget_s: 3.5
+  max_line_age_s: 8.0
+  max_live_inflight: 1
+
+library:
+  manifest: library/manifest.json
+  packs: library/costume_packs.json   # costume-specific lines, matched from the judge's costume string
+  require_approved: false
+
+aim:
+  listen: 0.0.0.0:8090
+
+watchdog:
+  frame_timeout_s: 30.0
+  tick_timeout_s: 20.0
+  debug_hooks: true         # 04-03: soak.sh's hang injection touches runs/debug_block_mainloop
+
+capture:
+  enabled: false
+  dir: runs/capture

@@ -1,0 +1,20 @@
+# udev rule keeping the race webcam and every hub between it and gbox1 out of USB power
+# saving (power/control "on" = no runtime autosuspend).
+#
+# Why (2026-10-19): gbox1's USB controller NVDA8000:02 died mid-stream with the Dell
+# WB7022 attached ("xHCI host not responding to stop endpoint command ... HC died"), and a
+# software reset could not revive it. The camera and its hubs were
+# all in autosuspend ("auto", 2 s idle) at the time. Turning that off is the cheap,
+# reversible step against the commonest cause of that error with USB 3 webcams. It is a
+# likely fix, NOT a proven one: soak-test it.
+#
+# Devices (lsusb on gbox1, 2026-10-19):
+#   413c:c015  Dell Webcam WB7022            413c:d001  its presence sensor
+#   0bda:0412 / 0bda:5412  hubs inside the WB7022 (appear and vanish with it)
+#   0bda:0411 / 0bda:5411  Realtek hub (Martin's swapped-in hub)
+#   2109:0822 / 2109:2822  VIA Labs hub (Martin's swapped-in hub)
+# A different camera or hub needs its IDs added. Install: needs root, see README.md.
+
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="413c", ATTR{idProduct}=="c015|d001", TEST=="power/control", ATTR{power/control}="on"
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="0411|0412|5411|5412", TEST=="power/control", ATTR{power/control}="on"
+ACTION=="add|change", SUBSYSTEM=="usb", ATTR{idVendor}=="2109", ATTR{idProduct}=="0822|2822", TEST=="power/control", ATTR{power/control}="on"

@@ -1,0 +1,107 @@
+# scarebox configuration — copy to config/scarebox.yaml and edit.
+# Secrets (camera password) come from .env, never from this file.
+
+camera:
+  host: ${CAMERA_HOST}           # or leave empty and set mac: to auto-discover on the local /24
+  mac: ""
+  user: ${CAMERA_USER}
+  password: ${CAMERA_PASSWORD}
+  rtsp_path: /cam/realmonitor?channel=1&subtype=1   # Dahua/Amcrest sub-stream
+  set_clock_on_start: true      # camera has no RTC battery; clock resets on power loss
+
+source:
+  kind: usb                      # usb | rtsp | file  (usb = webcam on gbox1; file = replay an MP4)
+  file: testdata/replay.mp4
+  loop: false
+  usb_name: WB7022               # part of the webcam's name (v4l2-ctl --list-devices); "" = any
+  usb_dev_dir: /host-dev         # where compose mounts the host's /dev inside the app container
+  width: 1920                    # 1080p MJPG@30: the mode the Dell held through a 20-min soak
+  height: 1080
+  fps: 30
+
+perceive:
+  detector: yolox_s              # yolox_s | rfdetr_base
+  min_confidence: 0.5
+  trigger_line: [[0.55, 0.0], [0.55, 1.0]]   # normalised x,y endpoints in the frame
+  min_bbox_height: 0.25          # fraction of frame height before a person counts
+  group_band: 0.08               # others within this distance of the line at trigger time join the group
+  group_window_s: 1.5            # deprecated: grouping no longer waits (kept for config compatibility)
+  best_crop_frames: 1            # 03-03 lever 1: single crop at trigger (was 5 -- the hub's lever
+                                  # ladder picked crop1+lean+cap1 as the chosen live config)
+
+judge:
+  endpoint: http://127.0.0.1:8100/v1   # OpenAI-compatible vision model server
+  model: qwen3-vl-4b-fp8          # Phase 1 pick: Qwen3-VL-4B-Instruct-FP8 (docs/MODELS.md)
+  crop_max_px: 512
+  timeout_s: 2.0
+  # Calibrated against 123 silver crops on the live VLM (scripts/calibrate_judge.py,
+  # 2026-10-15): confidence is uncorrelated with correctness -- the
+  # model reports 0.90-0.98 whether right or wrong, flat across every threshold 0.0-0.9. A
+  # cutoff here would route nothing extra to mystery and would not move the wrong-category
+  # rate, so it's left at 0.0 (never trips). Invalid/timeout/unparseable verdicts still fall
+  # back to mystery via judge.judge()'s own error path (returns None), independent of this.
+  min_confidence: 0.0
+  schema: lean    # 03-03 lever 2: c/k/d only (drops confidence/is_costume/group_size -- derived
+                  # downstream instead). "full" keeps the 03-02 six-key c/k/f/i/n/d schema.
+
+quip:
+  endpoint: http://127.0.0.1:8100/v1
+  model: qwen3-vl-4b-fp8          # same server, text-only call
+  max_words: 15
+  roast_non_costumes: true # generic lines for runners without a costume
+  timeout_s: 1.5           # 03-02: quip p95 target <= 700ms; generous headroom over network/decode
+  single_call: false       # 03-02: judge+quip single-call fallback (01-03 flagged); off by default
+  single_call_timeout_s: 2.5   # 03-03: judge_and_quip's own timeout, not shared with timeout_s --
+                                # 03-02 measured 0/20 survive at the shared 1.5s (always timed out)
+
+censor:
+  blocklist: config/blocklist.txt
+  guard_endpoint: http://127.0.0.1:8101/v1
+  guard_model: granite-guardian
+  fail_closed: true
+  guard_timeout_s: 0.6           # 03-01: guard p95 253 ms with the VLM busy; 0.25 would reject nearly all live lines
+
+voice:
+  engine: chatterbox              # Martin 2026-10-16: Chatterbox George (scarebox-tts container); kokoro still works
+  voice: bm_george                 # Kokoro voice; arbitrary tie-break among 4 British male samples, see docs/MODELS.md
+  reference_clip: library/voice/reference.wav   # unused by kokoro; kept for a future cloning engine
+  exaggeration: 0.7                # chatterbox-only; ignored by kokoro
+  fx_chain: megaphone          # Martin 2026-10-16: variant E (loud-hailer)
+  speed: 1.25
+  kokoro_dir: models/Kokoro-82M   # local weights only; relative to the app working dir (/app)
+  stream_segments: true    # one TTS request per sentence: 9.5% live share vs 3% whole-line (cb A/B 2026-10-16)
+  tts_url: http://127.0.0.1:8102   # engine chatterbox only: the scarebox-tts container
+  tts_timeout_s: 3.0               # engine chatterbox only: per-request HTTP timeout
+                            # instead of waiting for the whole line; off until the hub flips it on
+
+stage:
+  alsa_device: scarebox_out      # udev-pinned name of the USB dongle
+  sink: alsa                     # alsa | wav -- race default. "wav" (bench) skips the device
+                                  # entirely; "alsa" and no working device FAILS LOUDLY
+                                  # (self-test plays meta-err-audio), never a silent fallback.
+  cooldown_s: 1.0
+  queue_max: 2                   # when full, the oldest pending line is dropped
+  stings: false                  # true plays a short chime from library/sfx/ before each line
+
+orchestrator:
+  budget_s: 3.5                  # trigger -> audio start; miss it and the library line plays
+  max_line_age_s: 8.0            # never play a line older than this
+  max_live_inflight: 1           # live pipelines at once; others get judge-only + a library line (03-03)
+
+library:
+  manifest: library/manifest.json
+  packs: library/costume_packs.json   # costume-specific lines, matched from the judge's costume string
+  require_approved: false        # set true for the race: refuse to start with unvetted lines
+
+aim:
+  listen: 0.0.0.0:8090           # token from AIM_TOKEN in .env
+
+watchdog:
+  frame_timeout_s: 30.0    # no camera frame this long -> the app considers itself hung and
+                            # self-exits (04-01); `restart: unless-stopped` brings it back
+  tick_timeout_s: 20.0      # main per-frame loop hasn't ticked this long -> same
+  debug_hooks: false        # 04-03: true only in config/soak.yaml (the soak's hang injection)
+
+capture:
+  enabled: false                 # true writes a per-run tuning log (scarebox/capture.py); never at the race
+  dir: runs/capture

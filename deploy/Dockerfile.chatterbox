@@ -1,0 +1,37 @@
+FROM nvidia/cuda:13.0.1-cudnn-runtime-ubuntu24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.12 python3-pip python3.12-venv libsndfile1 ffmpeg git \
+    && rm -rf /var/lib/apt/lists/*
+
+# torch + torchaudio MATCHED pair from the cu130 index first, so chatterbox-tts cannot
+# pull a mismatched PyPI torchaudio later (the known blocker from the NGC image).
+RUN python3.12 -m pip install --break-system-packages \
+    --index-url https://download.pytorch.org/whl/cu130 \
+    torch==2.11.0 torchaudio==2.11.0
+
+# chatterbox-tts itself, WITHOUT its declared deps (it pins torch==2.6.0 which has no
+# aarch64/cu130 wheel and would silently clobber the pair above).
+RUN python3.12 -m pip install --break-system-packages --no-deps chatterbox-tts==0.1.7
+
+# Its other deps, explicitly, minus torch/torchaudio (already installed) and minus gradio
+# (only needed for the demo UI, not offline generate()).
+RUN python3.12 -m pip install --break-system-packages \
+    "numpy<2.0.0" \
+    librosa==0.11.0 \
+    s3tokenizer \
+    transformers==5.2.0 \
+    diffusers==0.29.0 \
+    resemble-perth>=1.0.0 \
+    conformer==0.3.2 \
+    safetensors==0.5.3 \
+    spacy-pkuseg \
+    pykakasi==2.3.0 \
+    pyloudnorm \
+    omegaconf \
+    soundfile scipy
+
+WORKDIR /app

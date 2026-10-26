@@ -1,0 +1,28 @@
+# Boot backstop, tied to gbox1's mode (2026-10-23). `restart: unless-stopped` only brings back
+# containers that were RUNNING when the power went; a stack that was stopped (gbox1-mode.sh normal
+# does that) stays down. This oneshot runs `compose up -d` once at boot: a no-op if Docker already
+# restarted everything, and a full start from cold otherwise.
+#
+# ENABLED ONLY IN SCAREBOX MODE: homelab/gbox1-mode.sh scarebox enables it, normal disables it, so a
+# normal-mode boot never starts scarebox on top of the fleet's big model. No ExecStop: powering off
+# leaves the containers as they were, and the next boot's `up -d` covers either case.
+#
+# Install (sudo, as martin): see deploy/host/README.md. User=scarebox / the paths assume the
+# standard layout (repo synced to /home/scarebox/scarebox by scripts/sync-gbox1.sh).
+
+[Unit]
+Description=scarebox stack (boot backstop; enabled only in scarebox mode)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=scarebox
+WorkingDirectory=/home/scarebox/scarebox
+Environment=SCAREBOX_CONFIG=config/field.yaml
+ExecStart=/usr/bin/docker compose -p scarebox -f /home/scarebox/scarebox/deploy/compose.yaml --env-file /home/scarebox/scarebox/deploy/images.env up -d
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,1464 @@
+[
+ {
+  "key": "spider-man",
+  "display": "Spider-Man",
+  "category": "superhero",
+  "tier": 1,
+  "aliases": [
+   "spider-man",
+   "spiderman",
+   "spider man",
+   "web slinger costume",
+   "red and blue spider suit"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF 2026: #1 kids costume overall (4.6m); Spirit 2026 trend list"
+ },
+ {
+  "key": "superhero-generic",
+  "display": "generic superhero",
+  "category": "superhero",
+  "tier": 1,
+  "aliases": [
+   "superhero",
+   "superhero costume",
+   "caped superhero",
+   "generic superhero",
+   "superhero cape and mask"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF 2026: #2 kids costume (2.3m), unbranded cape/mask"
+ },
+ {
+  "key": "batman",
+  "display": "Batman",
+  "category": "superhero",
+  "tier": 1,
+  "aliases": [
+   "batman",
+   "batman costume",
+   "batman shirt",
+   "dark knight costume"
+  ],
+  "kid_heavy": false,
+  "notes": "NRF 2026: top-3 adult costume; judge strings 'batman shirt'/'batman costume' (8 hits)"
+ },
+ {
+  "key": "superman",
+  "display": "Superman",
+  "category": "superhero",
+  "tier": 1,
+  "aliases": [
+   "superman",
+   "superman costume",
+   "superman shirt",
+   "superman cape",
+   "man of steel costume",
+   "red cape with yellow s"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF perennial top-10 adult+kid; judge strings sum ~13 hits ('superman shirt/cape/costume')"
+ },
+ {
+  "key": "wonder-woman",
+  "display": "Wonder Woman",
+  "category": "superhero",
+  "tier": 2,
+  "aliases": [
+   "wonder woman",
+   "wonder woman shirt",
+   "wonder woman costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Fun-run costume roundups list Wonder Woman as a race staple; judge 'wonder woman shirt' x4"
+ },
+ {
+  "key": "captain-america",
+  "display": "Captain America",
+  "category": "superhero",
+  "tier": 2,
+  "aliases": [
+   "captain america",
+   "captain america costume",
+   "cap shield costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge string 'captain america costume' x4; perennial Marvel kid costume"
+ },
+ {
+  "key": "flash",
+  "display": "The Flash",
+  "category": "superhero",
+  "tier": 2,
+  "aliases": [
+   "the flash",
+   "flash costume",
+   "flash running costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Fun-run roundups specifically cite The Flash as a running-costume joke (fast superhero)"
+ },
+ {
+  "key": "power-ranger",
+  "display": "Power Ranger",
+  "category": "superhero",
+  "tier": 2,
+  "aliases": [
+   "power ranger",
+   "power rangers costume",
+   "power ranger suit"
+  ],
+  "kid_heavy": true,
+  "notes": "Spirit Halloween 2026 trend list: Power Rangers remain popular"
+ },
+ {
+  "key": "black-panther",
+  "display": "Black Panther",
+  "category": "superhero",
+  "tier": 2,
+  "aliases": [
+   "black panther",
+   "black panther costume",
+   "black panther suit"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial top-10 Marvel kid costume"
+ },
+ {
+  "key": "princess-generic",
+  "display": "generic princess",
+  "category": "princess",
+  "tier": 1,
+  "aliases": [
+   "princess",
+   "princess costume",
+   "princess dress",
+   "pink princess dress",
+   "pink princess"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF 2026: #3 kids costume (2.2m); judge strings sum ~24 hits across 'princess'/'princess costume'/'pink princess dress'"
+ },
+ {
+  "key": "elsa",
+  "display": "Elsa (Frozen)",
+  "category": "princess",
+  "tier": 1,
+  "aliases": [
+   "elsa",
+   "elsa costume",
+   "frozen elsa dress",
+   "frozen queen costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Frozen's Elsa is the perennial #1 named princess costume for kids every year since 2014"
+ },
+ {
+  "key": "belle",
+  "display": "Belle (Beauty and the Beast)",
+  "category": "princess",
+  "tier": 2,
+  "aliases": [
+   "belle",
+   "belle costume",
+   "yellow ballgown"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial Disney princess; judge label 'yellow ballgown' (21 hits) matches Belle's signature dress"
+ },
+ {
+  "key": "cinderella",
+  "display": "Cinderella",
+  "category": "princess",
+  "tier": 2,
+  "aliases": [
+   "cinderella",
+   "cinderella costume",
+   "cinderella ballgown"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial Disney princess costume, pairs with pumpkin-carriage theming for this race"
+ },
+ {
+  "key": "moana",
+  "display": "Moana",
+  "category": "princess",
+  "tier": 2,
+  "aliases": [
+   "moana",
+   "moana costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Top-5 Disney princess costume since 2016, boosted by Moana 2 (2024)"
+ },
+ {
+  "key": "rapunzel",
+  "display": "Rapunzel (Tangled)",
+  "category": "princess",
+  "tier": 2,
+  "aliases": [
+   "rapunzel",
+   "rapunzel costume",
+   "tangled costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial Disney princess costume"
+ },
+ {
+  "key": "running-tutu",
+  "display": "tutu over running gear",
+  "category": "fairy_tutu",
+  "tier": 1,
+  "aliases": [
+   "tutu",
+   "yellow tutu",
+   "pink tutu",
+   "blue tutu",
+   "black tutu",
+   "tutu dress",
+   "tutu outfit",
+   "polka dot tutu",
+   "polka dot tutu outfit"
+  ],
+  "kid_heavy": true,
+  "notes": "Single biggest judge signal in the whole corpus: yellow tutu (43), pink tutu (37), plus blue/black/polka-dot variants; the single most common 5k costume accessory"
+ },
+ {
+  "key": "fairy-wings",
+  "display": "fairy with wings",
+  "category": "fairy_tutu",
+  "tier": 1,
+  "aliases": [
+   "fairy",
+   "fairy costume",
+   "fairy dress with wings",
+   "green fairy dress with wings",
+   "green fairy costume with wings",
+   "pink fairy with wings",
+   "fairy with wings"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'green fairy dress with wings' (14) + several wing variants; classic kids' Halloween costume"
+ },
+ {
+  "key": "tinkerbell",
+  "display": "Tinker Bell",
+  "category": "fairy_tutu",
+  "tier": 2,
+  "aliases": [
+   "tinkerbell",
+   "tinker bell",
+   "tinker bell costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge string 'tinkerbell'; the best-known named fairy costume"
+ },
+ {
+  "key": "ballerina",
+  "display": "ballerina",
+  "category": "fairy_tutu",
+  "tier": 2,
+  "aliases": [
+   "ballerina",
+   "ballerina costume",
+   "ballet tutu"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen kids' dance-recital-adjacent costume, library docstring already references 'A ballerina!' line"
+ },
+ {
+  "key": "butterfly-fairy",
+  "display": "butterfly",
+  "category": "fairy_tutu",
+  "tier": 2,
+  "aliases": [
+   "butterfly",
+   "butterfly costume",
+   "butterfly wings"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen kids' costume, wings variant of the fairy archetype"
+ },
+ {
+  "key": "witch",
+  "display": "witch",
+  "category": "witch_wizard",
+  "tier": 1,
+  "aliases": [
+   "witch",
+   "witch costume",
+   "blood-splattered witch",
+   "witch hat and robe"
+  ],
+  "kid_heavy": false,
+  "notes": "NRF 2026: #1 adult costume, #4-5 kids costume; judge 'witch' x6+ variants"
+ },
+ {
+  "key": "wizard-harry-potter",
+  "display": "wizard (Harry Potter style)",
+  "category": "witch_wizard",
+  "tier": 1,
+  "aliases": [
+   "wizard",
+   "wizard costume",
+   "harry potter",
+   "harry potter costume",
+   "wizard robe and hat"
+  ],
+  "kid_heavy": true,
+  "notes": "Harry Potter robes are an evergreen top-10 kids' costume every year"
+ },
+ {
+  "key": "wicked-witch",
+  "display": "Wicked-style green witch (Elphaba)",
+  "category": "witch_wizard",
+  "tier": 2,
+  "aliases": [
+   "elphaba",
+   "wicked witch",
+   "green witch costume",
+   "wicked costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Wicked: For Good (Nov 2025) kept green-witch costumes trending into Halloween 2026"
+ },
+ {
+  "key": "maleficent",
+  "display": "Maleficent",
+  "category": "witch_wizard",
+  "tier": 2,
+  "aliases": [
+   "maleficent",
+   "maleficent costume",
+   "horned witch costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Perennial top Disney villain costume"
+ },
+ {
+  "key": "sorcerer-cape",
+  "display": "sorcerer with starry cape",
+  "category": "witch_wizard",
+  "tier": 2,
+  "aliases": [
+   "sorcerer costume",
+   "starry robe",
+   "wizard cape and star hat"
+  ],
+  "kid_heavy": true,
+  "notes": "Generic wizard variant seen in fun-run costume roundups"
+ },
+ {
+  "key": "ghost-sheet",
+  "display": "classic sheet ghost",
+  "category": "ghost",
+  "tier": 1,
+  "aliases": [
+   "ghost",
+   "ghost costume",
+   "ghost sheet",
+   "white sheet with eye holes",
+   "blue ghost"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF 2026: tied #4-5 kids costume; judge 'ghost' x13"
+ },
+ {
+  "key": "casper",
+  "display": "Casper the Friendly Ghost",
+  "category": "ghost",
+  "tier": 2,
+  "aliases": [
+   "casper",
+   "casper costume",
+   "friendly ghost costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Best-known named ghost costume, G-rated and kid-friendly"
+ },
+ {
+  "key": "bedsheet-ghost-group",
+  "display": "group of sheet ghosts",
+  "category": "ghost",
+  "tier": 2,
+  "aliases": [
+   "group of ghosts",
+   "matching ghost costumes"
+  ],
+  "kid_heavy": true,
+  "notes": "Common family-group variant on the classic sheet ghost"
+ },
+ {
+  "key": "skeleton",
+  "display": "skeleton",
+  "category": "skeleton",
+  "tier": 1,
+  "aliases": [
+   "skeleton",
+   "skeleton costume",
+   "skeleton bodysuit",
+   "painted skeleton bodysuit",
+   "skull and bone face paint",
+   "skull/bone face paint",
+   "bone suit"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge 'skeleton'-family strings sum 14+; evergreen top-10 adult costume per NRF"
+ },
+ {
+  "key": "skull-face-paint",
+  "display": "skull face paint",
+  "category": "skeleton",
+  "tier": 2,
+  "aliases": [
+   "skull face paint",
+   "skull makeup",
+   "sugar skull makeup",
+   "calavera makeup"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge 'skull/bone face paint' (7 hits) distinct from full bodysuit"
+ },
+ {
+  "key": "grim-reaper",
+  "display": "grim reaper",
+  "category": "skeleton",
+  "tier": 2,
+  "aliases": [
+   "grim reaper",
+   "reaper costume",
+   "hooded skeleton robe"
+  ],
+  "kid_heavy": false,
+  "notes": "Perennial top-10 adult Halloween costume (NRF), skeletal theme fits this category"
+ },
+ {
+  "key": "zombie",
+  "display": "zombie",
+  "category": "zombie",
+  "tier": 1,
+  "aliases": [
+   "zombie",
+   "zombie costume",
+   "bloody zombie makeup",
+   "bloody zombie/undead bride makeup",
+   "zombie-run finishers group",
+   "blood-splattered dress",
+   "blood-splattered shirt",
+   "blood splatter costume",
+   "blood-spattered costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Heaviest zombie signal in judge corpus (19 direct + 77 bloody-makeup label); evergreen top-10 adult costume; blood-splatter modifiers folded in (gore implies zombie theme at this race's zombie-run footage)"
+ },
+ {
+  "key": "zombie-nurse",
+  "display": "zombie nurse",
+  "category": "zombie",
+  "tier": 2,
+  "aliases": [
+   "zombie nurse",
+   "nurse with blood splatters",
+   "bloodied nurse",
+   "nurse with blood splatter"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge 'zombie nurse' (9 hits) is a distinct named variant"
+ },
+ {
+  "key": "zombie-bride",
+  "display": "zombie bride",
+  "category": "zombie",
+  "tier": 2,
+  "aliases": [
+   "zombie bride",
+   "undead bride costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge label 'bloody zombie/undead bride makeup' (77 label hits) names this variant explicitly"
+ },
+ {
+  "key": "vampire",
+  "display": "vampire",
+  "category": "vampire",
+  "tier": 1,
+  "aliases": [
+   "vampire",
+   "vampire costume",
+   "dracula cape",
+   "fangs and cape"
+  ],
+  "kid_heavy": false,
+  "notes": "NRF 2026: #2 adult costume"
+ },
+ {
+  "key": "dracula",
+  "display": "Dracula",
+  "category": "vampire",
+  "tier": 2,
+  "aliases": [
+   "dracula",
+   "dracula costume",
+   "count dracula"
+  ],
+  "kid_heavy": false,
+  "notes": "Best-known named vampire costume"
+ },
+ {
+  "key": "mummy",
+  "display": "mummy",
+  "category": "mummy",
+  "tier": 1,
+  "aliases": [
+   "mummy",
+   "mummy costume",
+   "bandage wrap costume",
+   "wrapped in bandages"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge 'mummy'; perennial top-10 Halloween costume class"
+ },
+ {
+  "key": "pharaoh",
+  "display": "pharaoh / Egyptian royalty",
+  "category": "mummy",
+  "tier": 2,
+  "aliases": [
+   "pharaoh",
+   "pharaoh costume",
+   "egyptian king costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Common pairing with mummy theming at Halloween events"
+ },
+ {
+  "key": "pumpkin",
+  "display": "pumpkin",
+  "category": "pumpkin",
+  "tier": 1,
+  "aliases": [
+   "pumpkin",
+   "pumpkin costume",
+   "jack-o-lantern",
+   "jack o lantern",
+   "pumpkin onesie"
+  ],
+  "kid_heavy": true,
+  "notes": "Heaviest single judge hit after none/inflatables: 'pumpkin' x32"
+ },
+ {
+  "key": "pumpkin-bucket-head",
+  "display": "pumpkin bucket on head",
+  "category": "pumpkin",
+  "tier": 2,
+  "aliases": [
+   "pumpkin bucket costume",
+   "pumpkin head costume",
+   "pumpkin pail hat"
+  ],
+  "kid_heavy": true,
+  "notes": "Common cheap/homemade pumpkin variant seen at family fun runs"
+ },
+ {
+  "key": "pumpkin-spice-latte",
+  "display": "pumpkin spice latte cup",
+  "category": "pumpkin",
+  "tier": 2,
+  "aliases": [
+   "pumpkin spice latte costume",
+   "psl costume",
+   "pumpkin spice cup costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Popular novelty/meme costume at adult-leaning fun runs each autumn"
+ },
+ {
+  "key": "monster-generic",
+  "display": "generic furry monster",
+  "category": "monster",
+  "tier": 1,
+  "aliases": [
+   "monster",
+   "monster costume",
+   "green monster",
+   "furry monster suit"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'green monster' x8 plus generic 'monster' hits"
+ },
+ {
+  "key": "cookie-monster",
+  "display": "Cookie Monster",
+  "category": "monster",
+  "tier": 1,
+  "aliases": [
+   "cookie monster",
+   "cookie monster costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'cookie monster'/'cookie monster costume' sum 5; iconic blue Sesame Street monster"
+ },
+ {
+  "key": "frankenstein",
+  "display": "Frankenstein's monster",
+  "category": "monster",
+  "tier": 2,
+  "aliases": [
+   "frankenstein",
+   "frankenstein costume",
+   "frankenstein's monster"
+  ],
+  "kid_heavy": false,
+  "notes": "Perennial classic-monster Halloween costume"
+ },
+ {
+  "key": "devil",
+  "display": "devil",
+  "category": "monster",
+  "tier": 2,
+  "aliases": [
+   "devil",
+   "devil costume",
+   "horns and pitchfork costume",
+   "red devil costume"
+  ],
+  "kid_heavy": false,
+  "notes": "NRF perennial top-10 adult costume; mapped to monster (no dedicated category)"
+ },
+ {
+  "key": "sully-monsters-inc",
+  "display": "Sully (Monsters, Inc.)",
+  "category": "monster",
+  "tier": 2,
+  "aliases": [
+   "sully costume",
+   "monsters inc costume",
+   "blue furry monster costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Friendly-monster costume popular with younger kids"
+ },
+ {
+  "key": "dino-onesie",
+  "display": "dinosaur onesie",
+  "category": "dinosaur",
+  "tier": 1,
+  "aliases": [
+   "dinosaur",
+   "dinosaur costume",
+   "dinosaur onesie",
+   "dino onesie",
+   "green dinosaur onesie (non-inflatable, soft suit)",
+   "green dinosaur",
+   "pink dinosaur"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'green dinosaur onesie' (7) + plain 'dinosaur'/'green dinosaur' hits; non-inflatable soft-suit form"
+ },
+ {
+  "key": "raptor",
+  "display": "raptor / velociraptor",
+  "category": "dinosaur",
+  "tier": 2,
+  "aliases": [
+   "raptor costume",
+   "velociraptor costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common named dinosaur variant distinct from generic T-rex"
+ },
+ {
+  "key": "barney",
+  "display": "Barney (purple dinosaur)",
+  "category": "dinosaur",
+  "tier": 2,
+  "aliases": [
+   "barney costume",
+   "purple dinosaur costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen toddler-favourite named dinosaur character"
+ },
+ {
+  "key": "cow-onesie",
+  "display": "cow onesie",
+  "category": "animal",
+  "tier": 1,
+  "aliases": [
+   "cow",
+   "cow onesie",
+   "cow mascot",
+   "cow costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'cow onesie' label (28 hits, largest named-animal signal) plus 'cow'/'cow mascot'"
+ },
+ {
+  "key": "bee",
+  "display": "bee",
+  "category": "animal",
+  "tier": 1,
+  "aliases": [
+   "bee",
+   "bee costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'bee'/'bee costume' hits; classic black-and-yellow kids' costume"
+ },
+ {
+  "key": "black-cat",
+  "display": "black cat",
+  "category": "animal",
+  "tier": 1,
+  "aliases": [
+   "black cat",
+   "cat costume",
+   "cat ears and tail"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF perennial top-10 costume for both kids and adults"
+ },
+ {
+  "key": "ladybug",
+  "display": "ladybug",
+  "category": "animal",
+  "tier": 2,
+  "aliases": [
+   "ladybug",
+   "ladybug costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'ladybug costume'; classic toddler costume"
+ },
+ {
+  "key": "shark",
+  "display": "shark",
+  "category": "animal",
+  "tier": 2,
+  "aliases": [
+   "shark",
+   "shark costume",
+   "shark fin costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'shark fin costume' label (7); Baby Shark-driven toddler favourite"
+ },
+ {
+  "key": "lion",
+  "display": "lion",
+  "category": "animal",
+  "tier": 2,
+  "aliases": [
+   "lion",
+   "lion costume",
+   "lion mane costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Classic safari-animal kids' costume"
+ },
+ {
+  "key": "panda",
+  "display": "panda",
+  "category": "animal",
+  "tier": 2,
+  "aliases": [
+   "panda",
+   "panda costume",
+   "panda onesie"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial onesie-animal kids' costume"
+ },
+ {
+  "key": "chick-duck-onesie",
+  "display": "duck/chick onesie",
+  "category": "animal",
+  "tier": 2,
+  "aliases": [
+   "duck onesie",
+   "chick onesie",
+   "yellow duck/chick onesie",
+   "yellow chicken"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'yellow duck/chick onesie' label (7) and 'yellow chicken' (6), non-inflatable soft-suit form"
+ },
+ {
+  "key": "bunny-rabbit",
+  "display": "bunny / rabbit",
+  "category": "animal",
+  "tier": 2,
+  "aliases": [
+   "bunny costume",
+   "rabbit costume",
+   "white bunny with pink ears",
+   "bunny ears costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'bloodied rabbit mask'/'white bunny with red heart'/'white bunny with pink ears' \u2014 frequent named-animal costume"
+ },
+ {
+  "key": "inflatable-trex",
+  "display": "inflatable T-rex",
+  "category": "inflatable",
+  "tier": 1,
+  "aliases": [
+   "inflatable t. rex",
+   "inflatable t-rex",
+   "inflatable trex costume",
+   "blow up t-rex costume",
+   "bouncy t-rex costume",
+   "inflatable dinosaur"
+  ],
+  "kid_heavy": true,
+  "notes": "Single most common costume string in the whole judge corpus: 'inflatable t. rex' (77) + label 'green inflatable t-rex costume' (42)"
+ },
+ {
+  "key": "inflatable-duck",
+  "display": "inflatable duck",
+  "category": "inflatable",
+  "tier": 1,
+  "aliases": [
+   "inflatable duck",
+   "inflatable duck costume",
+   "blow up duck costume",
+   "yellow inflatable ride-on duck costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'inflatable duck' (25) + label 'yellow inflatable ride-on duck costume' (14); second-biggest costume signal"
+ },
+ {
+  "key": "inflatable-unicorn",
+  "display": "inflatable unicorn",
+  "category": "inflatable",
+  "tier": 1,
+  "aliases": [
+   "inflatable unicorn",
+   "unicorn costume",
+   "unicorn onesie",
+   "blow up unicorn costume",
+   "bouncy unicorn costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'inflatable unicorn' x6; the iconic bouncy-unicorn runner is a well-documented fun-run costume staple"
+ },
+ {
+  "key": "inflatable-chicken",
+  "display": "inflatable chicken",
+  "category": "inflatable",
+  "tier": 2,
+  "aliases": [
+   "inflatable chicken",
+   "blow up chicken costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'inflatable chicken' x4"
+ },
+ {
+  "key": "inflatable-cow",
+  "display": "inflatable cow",
+  "category": "inflatable",
+  "tier": 2,
+  "aliases": [
+   "inflatable cow",
+   "blow up cow costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'inflatable cow' x4"
+ },
+ {
+  "key": "inflatable-turtle",
+  "display": "inflatable (ninja) turtle",
+  "category": "inflatable",
+  "tier": 2,
+  "aliases": [
+   "inflatable turtle",
+   "inflatable teenage mutant ninja turtle",
+   "inflatable ninja turtle"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'inflatable turtle' + 'inflatable teenage mutant ninja turtle' sum 4"
+ },
+ {
+  "key": "inflatable-bee",
+  "display": "inflatable bee",
+  "category": "inflatable",
+  "tier": 2,
+  "aliases": [
+   "inflatable bee",
+   "blow up bee costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'inflatable bee' x2"
+ },
+ {
+  "key": "banana",
+  "display": "banana",
+  "category": "food",
+  "tier": 1,
+  "aliases": [
+   "banana",
+   "banana costume",
+   "banana suit"
+  ],
+  "kid_heavy": true,
+  "notes": "Fun-run costume roundups (Sports Basement, Runstreet) cite banana as a top running-costume classic"
+ },
+ {
+  "key": "hot-dog",
+  "display": "hot dog",
+  "category": "food",
+  "tier": 1,
+  "aliases": [
+   "hot dog",
+   "hot dog costume",
+   "hotdog costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Fun-run roundups cite hot dog costumes (with mustard) as a running-costume classic"
+ },
+ {
+  "key": "taco",
+  "display": "taco",
+  "category": "food",
+  "tier": 2,
+  "aliases": [
+   "taco",
+   "taco costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Fun-run roundup staple alongside hot dog/bacon"
+ },
+ {
+  "key": "pizza-slice",
+  "display": "pizza slice",
+  "category": "food",
+  "tier": 2,
+  "aliases": [
+   "pizza slice costume",
+   "pizza costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common novelty food costume at fun runs"
+ },
+ {
+  "key": "strawberry",
+  "display": "strawberry",
+  "category": "food",
+  "tier": 2,
+  "aliases": [
+   "strawberry costume",
+   "giant strawberry costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Fun-run roundup specifically names 'sprinting as a giant strawberry'"
+ },
+ {
+  "key": "grapes-bunch",
+  "display": "bunch of grapes",
+  "category": "food",
+  "tier": 2,
+  "aliases": [
+   "bunch of grapes costume",
+   "grapes costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Fun-run roundup names 'racing as a bundle of grapes'"
+ },
+ {
+  "key": "popcorn",
+  "display": "popcorn",
+  "category": "food",
+  "tier": 2,
+  "aliases": [
+   "popcorn costume",
+   "popcorn box costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common novelty food costume, G-rated and kid-friendly"
+ },
+ {
+  "key": "donut",
+  "display": "donut",
+  "category": "food",
+  "tier": 2,
+  "aliases": [
+   "donut costume",
+   "doughnut costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common novelty food costume seen at fun runs"
+ },
+ {
+  "key": "pirate",
+  "display": "pirate",
+  "category": "pirate",
+  "tier": 1,
+  "aliases": [
+   "pirate",
+   "pirate costume",
+   "pirate (striped shirt, vest, bandana)",
+   "pirate (black/white stripes, hat)"
+  ],
+  "kid_heavy": true,
+  "notes": "NRF 2026: #3 adult costume; judge label 'pirate (striped shirt, vest, bandana)' is the single biggest label in the corpus (42)"
+ },
+ {
+  "key": "captain-hook",
+  "display": "Captain Hook",
+  "category": "pirate",
+  "tier": 2,
+  "aliases": [
+   "captain hook",
+   "hook costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Best-known named pirate costume, G-rated"
+ },
+ {
+  "key": "astronaut",
+  "display": "astronaut",
+  "category": "robot_space",
+  "tier": 1,
+  "aliases": [
+   "astronaut",
+   "astronaut costume",
+   "space suit costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen top-10 kids' costume class, no franchise needed"
+ },
+ {
+  "key": "robot",
+  "display": "robot",
+  "category": "robot_space",
+  "tier": 2,
+  "aliases": [
+   "robot",
+   "robot costume",
+   "cardboard robot costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen kids' costume class"
+ },
+ {
+  "key": "alien",
+  "display": "alien",
+  "category": "robot_space",
+  "tier": 2,
+  "aliases": [
+   "alien",
+   "alien costume",
+   "little green alien costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen kids' costume class"
+ },
+ {
+  "key": "stormtrooper",
+  "display": "Stormtrooper (Star Wars)",
+  "category": "robot_space",
+  "tier": 2,
+  "aliases": [
+   "stormtrooper",
+   "star wars costume",
+   "darth vader costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial top-10 Star Wars costume, fits space theme"
+ },
+ {
+  "key": "super-mario",
+  "display": "Super Mario",
+  "category": "movie_character",
+  "tier": 1,
+  "aliases": [
+   "mario",
+   "super mario",
+   "super mario costume",
+   "mario (red cap, blue overalls)"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge sum ~19 hits across 'mario'/'super mario costume'/label; perennial top kid costume"
+ },
+ {
+  "key": "luigi",
+  "display": "Luigi",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "luigi",
+   "luigi costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'luigi costume' x4, pairs with Mario"
+ },
+ {
+  "key": "paw-patrol",
+  "display": "Paw Patrol character",
+  "category": "movie_character",
+  "tier": 1,
+  "aliases": [
+   "paw patrol",
+   "paw patrol character",
+   "paw patrol skye (pink outfit)",
+   "pink paw patrol costume",
+   "paw patrol puppy"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge label 'paw patrol skye (pink outfit)' (28, largest named-character label after pirate) plus variants; dominant toddler costume"
+ },
+ {
+  "key": "minion",
+  "display": "Minion (Despicable Me)",
+  "category": "movie_character",
+  "tier": 1,
+  "aliases": [
+   "minion",
+   "minion costume",
+   "minion (yellow/blue overalls)"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge sum ~11 hits across 'minion'/label; perennial top-5 kids' costume for a decade"
+ },
+ {
+  "key": "toy-story-woody",
+  "display": "Woody (Toy Story)",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "woody costume",
+   "toy story woody",
+   "cowboy sheriff toy story costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Spirit Halloween 2026 named trend (Toy Story 5 tie-in)"
+ },
+ {
+  "key": "toy-story-buzz",
+  "display": "Buzz Lightyear (Toy Story)",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "buzz lightyear",
+   "toy story buzz",
+   "space ranger toy story costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Spirit Halloween 2026 named trend (Toy Story 5 tie-in)"
+ },
+ {
+  "key": "scooby-doo",
+  "display": "Scooby-Doo",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "scooby doo",
+   "scooby-doo costume",
+   "great dane dog costume scooby"
+  ],
+  "kid_heavy": true,
+  "notes": "Google Frightgeist 2026: disco Scooby-Doo was #1 among duo costumes"
+ },
+ {
+  "key": "kpop-demon-hunter",
+  "display": "KPop Demon Hunters character",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "kpop demon hunters",
+   "rumi costume",
+   "mira costume",
+   "zoey costume",
+   "saja boy costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Spirit Halloween 2026 named trend, especially popular with tween girls"
+ },
+ {
+  "key": "angry-birds",
+  "display": "Angry Birds character",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "angry birds character",
+   "angry birds costume",
+   "red bird costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'angry birds character'/'angry birds costume' sum 4"
+ },
+ {
+  "key": "dr-seuss",
+  "display": "Dr. Seuss character (Cat in the Hat)",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "dr. seuss character",
+   "cat in the hat costume",
+   "dr seuss costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'dr. seuss character' x4; classic G-rated kids' costume"
+ },
+ {
+  "key": "willy-wonka",
+  "display": "Willy Wonka / chocolate bar",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "willy wonka costume",
+   "wonka bar costume",
+   "wonka bar box",
+   "golden ticket costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'wonka bar box'/'wonka bar costume' sum 4; family-friendly, boosted by recent Wonka film"
+ },
+ {
+  "key": "ghostbuster",
+  "display": "Ghostbuster",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "ghostbuster costume",
+   "ghostbusters jumpsuit",
+   "proton pack costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Perennial family-friendly costume, boosted by recent Ghostbusters films"
+ },
+ {
+  "key": "sonic-hedgehog",
+  "display": "Sonic the Hedgehog",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "sonic the hedgehog",
+   "sonic costume",
+   "blue hedgehog costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen top-10 kids' video-game costume, boosted by Sonic movie franchise"
+ },
+ {
+  "key": "among-us",
+  "display": "Among Us crewmate",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "among us costume",
+   "among us crewmate",
+   "bean costume among us"
+  ],
+  "kid_heavy": true,
+  "notes": "Major kids/teens video-game costume trend of the last several Halloweens"
+ },
+ {
+  "key": "bluey",
+  "display": "Bluey",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "bluey costume",
+   "bluey dog costume",
+   "bingo costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Bluey is the dominant toddler TV show as of 2026; extremely likely at a family fun run"
+ },
+ {
+  "key": "spongebob",
+  "display": "SpongeBob SquarePants",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "spongebob",
+   "spongebob squarepants costume",
+   "sponge costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Evergreen top-10 kids' costume for two decades"
+ },
+ {
+  "key": "wednesday-addams",
+  "display": "Wednesday Addams",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "wednesday addams",
+   "wednesday addams costume",
+   "black braids costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Netflix's Wednesday (season 2, 2025) kept this a top tween/teen girls' costume into 2026"
+ },
+ {
+  "key": "barbie",
+  "display": "Barbie",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "barbie costume",
+   "barbie doll costume",
+   "pink barbie dress"
+  ],
+  "kid_heavy": true,
+  "notes": "Still a top-10 costume following the 2023 Barbie film's cultural staying power"
+ },
+ {
+  "key": "minecraft-character",
+  "display": "Minecraft character (Steve/Creeper)",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "minecraft costume",
+   "minecraft steve",
+   "minecraft creeper costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Google Frightgeist 2026 lists a Minecraft character ('Verity') in its top 10; long-running kids' costume trend"
+ },
+ {
+  "key": "alice-in-wonderland",
+  "display": "Alice in Wonderland",
+  "category": "movie_character",
+  "tier": 2,
+  "aliases": [
+   "alice in wonderland",
+   "alice costume",
+   "blue dress white apron costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge 'alice in wonderland' x5; perennial family-friendly costume"
+ },
+ {
+  "key": "sports-jersey",
+  "display": "generic sports jersey/uniform",
+  "category": "sports_uniform",
+  "tier": 1,
+  "aliases": [
+   "sports jersey",
+   "sports uniform",
+   "lakers jersey",
+   "running uniform",
+   "athletic uniform"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge 'lakers jersey' x5 plus generic uniform hits"
+ },
+ {
+  "key": "referee",
+  "display": "referee",
+  "category": "sports_uniform",
+  "tier": 1,
+  "aliases": [
+   "referee",
+   "referee (black and white stripes)",
+   "black and white striped referee shirt"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge label 'referee (black and white stripes)' (7 hits)"
+ },
+ {
+  "key": "cheerleader",
+  "display": "cheerleader",
+  "category": "sports_uniform",
+  "tier": 2,
+  "aliases": [
+   "cheerleader",
+   "cheerleader costume",
+   "pom poms costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common family-fun-run costume, often worn by kids cheering on runners too"
+ },
+ {
+  "key": "varsity-jacket",
+  "display": "varsity jacket",
+  "category": "sports_uniform",
+  "tier": 2,
+  "aliases": [
+   "varsity jacket costume",
+   "letterman jacket costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Spirit Halloween 2026 named trend"
+ },
+ {
+  "key": "patriotic-flag-runner",
+  "display": "American flag / patriotic running gear",
+  "category": "sports_uniform",
+  "tier": 2,
+  "aliases": [
+   "american flag costume",
+   "american flag shorts",
+   "american flag themed runner",
+   "stars and stripes costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Judge 'american flag costume'/'american flag shorts'/'american flag themed runner' sum ~13; common patriotic fun-run costume"
+ },
+ {
+  "key": "cardboard-box",
+  "display": "cardboard box costume",
+  "category": "homemade_box",
+  "tier": 1,
+  "aliases": [
+   "cardboard box costume",
+   "box costume",
+   "amazon box costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Classic cheap/homemade kids' costume, matches category name directly"
+ },
+ {
+  "key": "crayon-box",
+  "display": "crayon",
+  "category": "homemade_box",
+  "tier": 2,
+  "aliases": [
+   "crayon costume",
+   "box of crayons costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common homemade kids' costume, often a group set (whole crayon box)"
+ },
+ {
+  "key": "rubiks-cube",
+  "display": "Rubik's Cube",
+  "category": "homemade_box",
+  "tier": 2,
+  "aliases": [
+   "rubik's cube costume",
+   "rubiks cube costume"
+  ],
+  "kid_heavy": false,
+  "notes": "Common novelty box-shaped homemade costume"
+ },
+ {
+  "key": "matching-group",
+  "display": "matching family/friends group costume",
+  "category": "group",
+  "tier": 1,
+  "aliases": [
+   "matching group costume",
+   "matching family costumes",
+   "group costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Judge categories show repeated multi-person groups ('parade hallway group', 'marathon pack', group_size>1 events)"
+ },
+ {
+  "key": "superhero-squad",
+  "display": "superhero squad",
+  "category": "group",
+  "tier": 2,
+  "aliases": [
+   "superhero squad costume",
+   "superhero group costume"
+  ],
+  "kid_heavy": true,
+  "notes": "Common family-group variant pairing multiple superhero costumes"
+ }
+]

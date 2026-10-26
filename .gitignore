@@ -1,0 +1,36 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# heavy / private local data (never published)
+models/
+!scarebox/vendor/**/models/
+testdata/
+runs/
+*.mp4
+*.mkv
+*.wav
+!library/**/*.wav
+
+# per-installation config overlay (scarebox/config.py merges it over any config in config/)
+config/local.yaml
+
+# private deny list for scripts/leak_gate.py (fleet hostnames, personal names)
+scripts/leak_gate.deny
+
+# harness-local symlinks and settings (point at the author's machine)
+scripts/adr-context.py
+scripts/adr-lint.py
+.claude/settings.local.json
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# torch hub / model caches on the GPU host
+.torch_cache/
