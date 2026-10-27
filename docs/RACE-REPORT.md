@@ -98,7 +98,7 @@ watchdog and the app was back in 5 s.
 - **Open bug: silent while the camera was missing.** The self-test is meant to say "I say, I can't
   see a blessed thing" when there is no picture, and repeat it every 2 minutes. While the camera
   was missing on race morning the box said nothing at all, so the only sign was the absence of
-  jokes. Not yet fixed; it will be tracked on this repository's issue tracker.
+  jokes. Not yet fixed: [issue #1](https://github.com/voronerd/scarebox/issues/1).
 
 ### Before race day
 

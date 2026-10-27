@@ -43,7 +43,7 @@ fix at the start:
 - Two phones used the aim page over the travel router's Wi-Fi.
 - **What broke:** at power-on the webcam's USB 3 link didn't come up. Reseating the plug fixed
   it, and the camera then held for the whole run. While the camera was missing the box stayed
-  silent instead of announcing the fault; that is an open bug.
+  silent instead of announcing the fault; that is an open bug ([#1](https://github.com/voronerd/scarebox/issues/1)).
 
 Tuning on 19 minutes of test footage beforehand raised the share of eye-catching costumes
 actually named aloud from 12.4% to 31.3%. Details: [`docs/RACE-REPORT.md`](docs/RACE-REPORT.md).
